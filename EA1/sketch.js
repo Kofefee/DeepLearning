@@ -42,5 +42,5 @@ var layout = {
   height: 400,
   width: 500
 };
-myDiv = document.getElementById('myDiv');
-Plotly.newPlot(myDiv, data, layout);
+//myDiv = document.getElementById('myDiv');
+Plotly.newPlot('myDiv', data, layout);
