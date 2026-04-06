@@ -32,18 +32,12 @@ function gotResult(results) {
   console.log(label);
 }
 
-var data = [{
-  values: [19, 26, 55],
-  labels: ['Residential', 'Non-Residential', 'Utility'],
-  type: 'pie'
-}];
 
-var layout = {
-  height: 400,
-  width: 500
-};
 myDiv = document.getElementById('myDiv');
+Plotly.newPlot( myDiv, [{
+	x: [1, 2, 3, 4, 5],
+	y: [1, 2, 4, 8, 16] }], {
+	margin: { t: 0 } } );
 
-Plotly.newPlot('myDiv', data, layout);
-
+//Plotly.newPlot('myDiv', data, layout);
 console.log("This is my Div:" + myDiv);
