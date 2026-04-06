@@ -8,7 +8,7 @@ let canvasText = 'Drag an image file onto the canvas.';
 
 function preload() {
     classifier = ml5.imageClassifier("MobileNet");
-    img = loadImage("images/bird.png");
+    img = loadImage("images/bird.jpg");
 }
 
 function setup() {
