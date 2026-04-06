@@ -31,3 +31,16 @@ function gotResult(results) {
   text(confidence, 10, 380);
   console.log(label);
 }
+
+var data = [{
+  values: [19, 26, 55],
+  labels: ['Residential', 'Non-Residential', 'Utility'],
+  type: 'pie'
+}];
+
+var layout = {
+  height: 400,
+  width: 500
+};
+
+Plotly.newPlot('myDiv', data, layout);
