@@ -17,9 +17,9 @@ function setup() {
 
 function draw() {
     background(220);
-
+    drawPieChart();
     myDiv = document.getElementById('myDiv');
-    console.log("This is my Div:" + myDiv);
+    //console.log("This is my Div:" + myDiv);
     Plotly.newPlot(myDiv, [{
         x: [1, 2, 3, 4, 5],
         y: [1, 2, 4, 8, 16]
