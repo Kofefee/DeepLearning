@@ -34,10 +34,10 @@ function gotResult(results) {
 
 
 myDiv = document.getElementById('myDiv');
+console.log("This is my Div:" + myDiv);
 Plotly.newPlot( myDiv, [{
 	x: [1, 2, 3, 4, 5],
 	y: [1, 2, 4, 8, 16] }], {
 	margin: { t: 0 } } );
 
 //Plotly.newPlot('myDiv', data, layout);
-console.log("This is my Div:" + myDiv);
