@@ -43,5 +43,7 @@ var layout = {
   width: 500
 };
 myDiv = document.getElementById('myDiv');
-console.log(myDiv);
+
 Plotly.newPlot('myDiv', data, layout);
+
+console.log("This is my Div:" + myDiv);
