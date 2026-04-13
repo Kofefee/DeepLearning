@@ -5,3 +5,22 @@ html, body {
 canvas {
   display: block;
 }
+
+.row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .image-container {
+    margin-right: 20px;
+  }
+
+  .chart-container {
+    width: 400px;
+    height: 300px;
+  }
+
+  img {
+    max-width: 200px;
+  }

@@ -17,9 +17,10 @@ function preload() {
 }
 
 function setup() {
-    createCanvas(400, 400);
-    classifier.classify(img, gotResult);
-    image(img, 300, 300);
+    //createCanvas(400, 400);
+
+    //classifier.classify(img, gotResult);
+    //image(img, 300, 300);
     // Drag and Drop
     let dropArea = createCanvas(710, 400);
     dropArea.drop(gotFile);
@@ -70,12 +71,63 @@ function gotResult(results) {
 }
 
 function gotFile(file) {
-    //Drag and Drop
     if (file.type === 'image') {
-        let img = createImg(file.data, '').hide();
-        image(img, 0, 0, width, height);
+        let imgElement = createImg(file.data, '').hide();
+
+        // Klassifizieren und Bild + Chart erzeugen
+        classifier.classify(imgElement.elt, (results) => {
+            createResultRow(file.data, results);
+        });
+
     } else {
         canvasText = 'Not an image file!';
         redraw();
     }
+}
+
+function createResultRow(imageSrc, results) {
+    let container = document.getElementById('results');
+
+    // Row erstellen
+    let row = document.createElement('div');
+    row.className = 'row';
+
+    // Bild
+    let imgDiv = document.createElement('div');
+    imgDiv.className = 'image-container';
+
+    let img = document.createElement('img');
+    img.src = imageSrc;
+    imgDiv.appendChild(img);
+
+    // Chart Div (wichtig: eindeutige ID!)
+    let chartDiv = document.createElement('div');
+    chartDiv.className = 'chart-container';
+
+    let chartId = 'chart-' + Date.now();
+    chartDiv.id = chartId;
+
+    // Row zusammenbauen
+    row.appendChild(imgDiv);
+    row.appendChild(chartDiv);
+    container.appendChild(row);
+
+    // Daten vorbereiten
+    let labels = results.map(r => r.label);
+    let values = results.map(r => r.confidence);
+
+    let data = [{
+        values: values,
+        labels: labels,
+        type: 'pie',
+        textinfo: 'label+percent'
+    }];
+
+    let layout = {
+        height: 300,
+        width: 400
+    };
+
+    // Plot zeichnen
+    Plotly.newPlot(chartId, data, layout);
 }
