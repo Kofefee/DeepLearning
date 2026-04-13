@@ -6,6 +6,11 @@ let confidence = "";
 
 let canvasText = 'Drag an image file onto the canvas.';
 
+var layout = {
+    height: 400,
+    width: 500
+};
+
 function preload() {
     classifier = ml5.imageClassifier("MobileNet");
     img = loadImage("images/good1.jpg");
