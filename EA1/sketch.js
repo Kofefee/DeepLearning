@@ -1,77 +1,122 @@
 let classifier;
-let img;
 
-let label = "";
-let confidence = "";
+let images = [
+    { src: "images/good1.jpg", label: "", conf: 0 },
+    { src: "images/good2.jpg", label: "", conf: 0 },
+    { src: "images/good3.jpg", label: "", conf: 0 },
+    { src: "images/bad1.jpg", label: "", conf: 0 },
+    { src: "images/bad2.jpg", label: "", conf: 0 },
+    { src: "images/bad3.jpg", label: "", conf: 0 }
+];
+
+let loadedImages = [];
 
 let canvasText = 'Drag an image file onto the canvas.';
 
-    var data = [{
-        values: [19, 26, 55],
-        labels: ['Residential', 'Non-Residential', 'Utility'],
-        type: 'pie'
-    }];
-
-    var layout = {
-        height: 400,
-        width: 500
-    };
-
 function preload() {
     classifier = ml5.imageClassifier("MobileNet");
-    img = loadImage("images/bird.jpg");
+
+    for (let i = 0; i < images.length; i++) {
+        loadedImages[i] = loadImage(images[i].src);
+    }
 }
 
 function setup() {
     createCanvas(400, 400);
-    classifier.classify(img, gotResult);
-    image(img, 300, 300);
+
+    // Klassifiziere alle Bilder
+    for (let i = 0; i < loadedImages.length; i++) {
+        classifyImage(i);
+    }
 
     // Drag and Drop
     let dropArea = createCanvas(710, 400);
     dropArea.drop(gotFile);
-    noLoop();
+    //noLoop();
+}
+
+function classifyImage(index) {
+    classifier.classify(loadedImages[index], (err, results) => {
+        if (err) {
+            console.error(err);
+            return;
+        }
+
+        images[index].label = results[0].label;
+        images[index].conf = results[0].confidence;
+
+        drawPieChart(index);
+    });
 }
 
 function draw() {
-    background(220);
+    background(240);
 
-    //Drag and Drop
-    fill(255);
-    noStroke();
-    textSize(24);
-    textAlign(CENTER);
-    text(canvasText, width / 2, height / 2);
+    for (let i = 0; i < loadedImages.length; i++) {
 
-    describe(`Grey canvas with the text "${canvasText}" in the center.`);
+        let y = i * 100;
 
+        // Bild links
+        image(loadedImages[i], 10, y, 80, 80);
 
-    Plotly.newPlot('myDiv', data, layout);
-    /*
-        myDiv = document.getElementById('myDiv');
-        //console.log("This is my Div:" + myDiv);
-        Plotly.newPlot(myDiv, [{
-            x: [1, 2, 3, 4, 5],
-            y: [1, 2, 4, 8, 16]
-        }], {
-            margin: { t: 0 }
-        });
-        */
-}
-
-function gotResult(results) {
-    console.log(results);
-}
-
-function gotFile(file) {
-    //Drag and Drop
-    if (file.type === 'image') {
-        let img = createImg(file.data, '').hide();
-        image(img, 0, 0, width, height);
-    } else {
-        canvasText = 'Not an image file!';
-        redraw();
+        // Text
+        fill(0);
+        textSize(12);
+        text(images[i].label, 100, y + 30);
+        text(nf(images[i].conf * 100, 2, 2) + "%", 100, y + 50);
     }
 }
 
-//Plotly.newPlot('myDiv', data, layout);
+function drawPieChart(index) {
+
+    let conf = images[index].conf;
+
+    let data = [{
+        values: [conf, 1 - conf],
+        labels: ['Confidence', 'Rest'],
+        type: 'pie'
+    }];
+
+    let layout = {
+        height: 100,
+        width: 150
+    };
+
+    let divId = "chart" + index;
+
+    if (!document.getElementById(divId)) {
+        let div = createDiv().id(divId);
+        div.position(300, index * 100);
+    }
+
+    Plotly.newPlot(divId, data, layout);
+}
+
+// Upload Funktion
+function gotFile(file) {
+
+    if (file.type === 'image') {
+
+        let img = createImg(file.data, '').hide();
+
+        classifier.classify(img, (err, results) => {
+            if (err) return;
+
+            let label = results[0].label;
+            let conf = results[0].confidence;
+
+            // Anzeige
+            let div = createDiv("Upload Ergebnis: " + label + " (" + nf(conf * 100, 2, 2) + "%)");
+            div.position(10, 620);
+
+            let data = [{
+                values: [conf, 1 - conf],
+                labels: ['Confidence', 'Rest'],
+                type: 'pie'
+            }];
+
+            Plotly.newPlot(div.elt, data);
+        });
+
+    }
+}
