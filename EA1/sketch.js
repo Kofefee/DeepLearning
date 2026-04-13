@@ -42,7 +42,7 @@ function draw() {
     text(canvasText, width / 2, height / 2);
 
     describe(`Grey canvas with the text "${canvasText}" in the center.`);
-    Plotly.newPlot('myDiv', data, layout);
+    //Plotly.newPlot('myDiv', data, layout);
     /*
         myDiv = document.getElementById('myDiv');
         //console.log("This is my Div:" + myDiv);
@@ -57,6 +57,22 @@ function draw() {
 
 function gotResult(results) {
     console.log(results);
+
+    // Labels und Werte extrahieren
+    let labels = results.map(r => r.label);
+    let values = results.map(r => r.confidence);
+
+    // Plotly Daten aktualisieren
+    data = [{
+        values: values,
+        labels: labels,
+        type: 'pie',
+        textinfo: 'label+percent', // zeigt Label + Prozent
+        hoverinfo: 'label+percent+value'
+    }];
+
+    // Chart neu zeichnen
+    Plotly.newPlot('myDiv', data, layout);
 }
 
 function gotFile(file) {
