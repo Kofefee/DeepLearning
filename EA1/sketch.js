@@ -6,17 +6,6 @@ let confidence = "";
 
 let canvasText = 'Drag an image file onto the canvas.';
 
-var data = [{
-    values: [19, 26, 55],
-    labels: ['Residential', 'Non-Residential', 'Utility'],
-    type: 'pie'
-}];
-
-var layout = {
-    height: 400,
-    width: 500
-};
-
 function preload() {
     classifier = ml5.imageClassifier("MobileNet");
     img = loadImage("images/good1.jpg");
