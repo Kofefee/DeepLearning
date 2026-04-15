@@ -11,9 +11,20 @@ var layout = {
     width: 500
 };
 
+let defaultImages = [
+    "images/good1.jpg",
+    "images/good2.jpg",
+    "images/good3.jpg",
+    "images/bad1.jpg",
+    "images/bad2.jpg",
+    "images/bad3.jpg"
+];
+
 function preload() {
     classifier = ml5.imageClassifier("MobileNet");
     img = loadImage("images/good1.jpg");
+
+    loadDefaultImages(); // HIER aufrufen!
 }
 
 function setup() {
@@ -25,6 +36,10 @@ function setup() {
     let dropArea = createCanvas(710, 400);
     dropArea.drop(gotFile);
     noLoop();
+
+
+    // Default-Bilder laden
+    //loadDefaultImages();
 }
 
 function draw() {
@@ -130,4 +145,17 @@ function createResultRow(imageSrc, results) {
 
     // Plot zeichnen
     Plotly.newPlot(chartId, data, layout);
+}
+
+function loadDefaultImages() {
+    defaultImages.forEach(src => {
+        let img = new Image();
+        img.src = src;
+
+        img.onload = () => {
+            classifier.classify(img, (results) => {
+                createResultRow(src, results);
+            });
+        };
+    });
 }
