@@ -128,7 +128,7 @@ function createResultRow(imageSrc, results, divName) {
     container.appendChild(row);
 
     // Daten vorbereiten
-    let labels = results.map(r => r.label);
+    let labels = results.map(r => r.label.substring(30));
     let values = results.map(r => r.confidence);
 
     let data = [{
