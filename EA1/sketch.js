@@ -91,7 +91,7 @@ function gotFile(file) {
 
         // Klassifizieren und Bild + Chart erzeugen
         classifier.classify(imgElement.elt, (results) => {
-            createResultRow(file.data, results);
+            createResultRow(file.data, results, 'uploadedImages');
         });
 
     } else {
@@ -100,8 +100,8 @@ function gotFile(file) {
     }
 }
 
-function createResultRow(imageSrc, results) {
-    let container = document.getElementById('results');
+function createResultRow(imageSrc, results, divName) {
+    let container = document.getElementById(divName);
 
     // Row erstellen
     let row = document.createElement('div');
@@ -154,7 +154,7 @@ function loadDefaultImages() {
 
         img.onload = () => {
             classifier.classify(img, (results) => {
-                createResultRow(src, results);
+                createResultRow(src, results, 'results');
             });
         };
     });
