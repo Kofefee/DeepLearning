@@ -139,8 +139,8 @@ function createResultRow(imageSrc, results, divName) {
     }];
 
     let layout = {
-        height: 300,
-        width: 400
+        height: 600,
+        width: 800
     };
 
     // Plot zeichnen
