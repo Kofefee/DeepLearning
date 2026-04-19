@@ -160,7 +160,7 @@ function loadDefaultImages() {
     });
 }
 
-function wrapLabel(label, maxLength = 6) {
+function wrapLabel(label, maxLength = 35) {
     let result = '';
     let currentLine = '';
 
