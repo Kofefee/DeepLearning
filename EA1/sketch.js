@@ -69,7 +69,7 @@ function gotResult(results) {
     console.log(results);
 
     // Labels und Werte extrahieren
-    let labels = results.map(r => r.label);
+    let labels = results.map(r => wrapLabel(r.label));
     let values = results.map(r => r.confidence);
 
     // Plotly Daten aktualisieren
@@ -158,4 +158,20 @@ function loadDefaultImages() {
             });
         };
     });
+}
+
+function wrapLabel(label, maxLength = 35) {
+    let result = '';
+    let currentLine = '';
+
+    label.split(' ').forEach(word => {
+        if ((currentLine + word).length > maxLength) {
+            result += currentLine + '<br>';
+            currentLine = word + ' ';
+        } else {
+            currentLine += word + ' ';
+        }
+    });
+
+    return result + currentLine.trim();
 }
