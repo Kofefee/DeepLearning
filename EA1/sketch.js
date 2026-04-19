@@ -77,7 +77,7 @@ function gotResult(results) {
         values: values,
         labels: labels,
         type: 'pie',
-        textinfo: 'label+percent', // zeigt Label + Prozent
+        //textinfo: 'label+percent', // zeigt Label + Prozent
         hoverinfo: 'label+percent+value'
     }];
 
