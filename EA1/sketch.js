@@ -69,7 +69,7 @@ function gotResult(results) {
     console.log(results);
 
     // Labels und Werte extrahieren
-    let labels = results.map(r => r.label.substring(30));
+    let labels = results.map(r => r.label.substring(0, 30));
     let values = results.map(r => r.confidence);
 
     // Plotly Daten aktualisieren
