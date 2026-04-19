@@ -1,5 +1,5 @@
 html, body {
-  margin: 0;
+  margin: 2%;
   padding: 0;
 }
 canvas {
@@ -9,11 +9,11 @@ canvas {
 .row {
     display: flex;
     align-items: center;
-    margin-bottom: 20px;
+    margin: 40px;
   }
 
   .image-container {
-    margin-right: 20px;
+    margin: 20px;
   }
 
   .chart-container {
@@ -22,5 +22,5 @@ canvas {
   }
 
   img {
-    max-width: 200px;
+    max-width: 500px;
   }
