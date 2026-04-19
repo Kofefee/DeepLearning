@@ -135,7 +135,7 @@ function createResultRow(imageSrc, results, divName) {
         values: values,
         labels: labels,
         type: 'pie',
-        textinfo: 'label+percent'
+        //textinfo: 'label+percent'
     }];
 
     let layout = {
