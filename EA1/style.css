@@ -27,14 +27,14 @@ canvas {
   display: flex;
   align-items: center;
   margin: 40px;
-  border: 5px, green;
+  border: solid, 20px, green;
 }
 
 .red {
   display: flex;
   align-items: center;
   margin: 40px;
-  border: 5px, red;
+  border: solid, 20px, red;
 }
 
 img {
