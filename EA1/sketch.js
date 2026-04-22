@@ -120,10 +120,10 @@ function createResultRow(imageSrc, results, divName) {
     chartDiv.className = 'chart-container';
 
     if (divName == "results"){
-        if (divName.includes("good")){
+        if (imageSrc.includes("good")){
             row.className = 'green';
         }
-        else if (divName.includes("bad")){
+        else if (imageSrc.includes("bad")){
             row.className = 'red';
         }
     }
