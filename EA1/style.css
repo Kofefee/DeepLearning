@@ -1,38 +1,40 @@
-html, body {
+html,
+body {
   margin: 2%;
   padding: 0;
 }
+
 canvas {
   display: block;
 }
 
 .row {
-    display: flex;
-    align-items: center;
-    margin: 40px;
-  }
+  display: flex;
+  align-items: center;
+  margin: 40px;
+}
 
-  .image-container {
-    margin: 20px;
-  }
+.image-container {
+  margin: 20px;
+}
 
-  .chart-container {
-    width: 800px;
-    height: 500px;
-  }
+.chart-container {
+  width: 800px;
+  height: 500px;
+}
 
-  .chart-container .green {
-    width: 800px;
-    height: 500px;
-    border: 5px, green;
-  }
+.row .green {
+  width: 800px;
+  height: 500px;
+  border: 5px, green;
+}
 
-    .chart-container .red {
-    width: 800px;
-    height: 500px;
-    border: 5px, red;
-  }
+.row .red {
+  width: 800px;
+  height: 500px;
+  border: 5px, red;
+}
 
-  img {
-    max-width: 300px;
-  }
+img {
+  max-width: 300px;
+}
