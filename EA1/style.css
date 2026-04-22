@@ -24,14 +24,16 @@ canvas {
 }
 
 .green {
-  width: 800px;
-  height: 500px;
+  display: flex;
+  align-items: center;
+  margin: 40px;
   border: 5px, green;
 }
 
 .red {
-  width: 800px;
-  height: 500px;
+  display: flex;
+  align-items: center;
+  margin: 40px;
   border: 5px, red;
 }
 

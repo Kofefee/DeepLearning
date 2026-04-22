@@ -121,10 +121,10 @@ function createResultRow(imageSrc, results, divName) {
 
     if (divName == "results"){
         if (imageSrc.includes("good")){
-            row.className = 'row green';
+            row.className = 'green';
         }
-        else if (imageSrc.includes("bad")){
-            row.className = 'row red';
+        else{
+            row.className = 'red';
         }
     }
 
