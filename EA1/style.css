@@ -21,6 +21,18 @@ canvas {
     height: 500px;
   }
 
+  .chart-container .green {
+    width: 800px;
+    height: 500px;
+    border: 5px, green;
+  }
+
+    .chart-container .red {
+    width: 800px;
+    height: 500px;
+    border: 5px, red;
+  }
+
   img {
     max-width: 300px;
   }

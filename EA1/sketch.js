@@ -119,6 +119,15 @@ function createResultRow(imageSrc, results, divName) {
     let chartDiv = document.createElement('div');
     chartDiv.className = 'chart-container';
 
+    if (divName == "results"){
+        if (divName.includes("good")){
+            chartDiv.className = 'green';
+        }
+        else if (divName.includes("bad")){
+            chartDiv.className = 'red';
+        }
+    }
+
     let chartId = 'chart-' + Date.now();
     chartDiv.id = chartId;
 
