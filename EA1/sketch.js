@@ -17,7 +17,10 @@ let defaultImages = [
     "images/good3.jpg",
     "images/bad1.jpg",
     "images/bad2.jpg",
-    "images/bad3.jpg"
+    "images/bad3.jpg",
+    "images/bad4.jpg",
+    "images/bad5.jpg",
+    "images/bad6.jpg"
 ];
 
 function preload() {
