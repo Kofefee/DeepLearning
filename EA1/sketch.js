@@ -34,6 +34,7 @@ function setup() {
     //image(img, 300, 300);
     // Drag and Drop
     let dropArea = createCanvas(710, 400);
+    dropArea.parent('canvas-wrapper');
     dropArea.drop(gotFile);
     noLoop();
 
@@ -43,26 +44,14 @@ function setup() {
 }
 
 function draw() {
-    background(220);
-    //Drag and Drop
-    fill(255);
+    background(245, 244, 240);
+    fill(100);
     noStroke();
-    textSize(24);
+    textSize(13);
     textAlign(CENTER);
+    textFont('IBM Plex Mono');
     text(canvasText, width / 2, height / 2);
-
-    describe(`Grey canvas with the text "${canvasText}" in the center.`);
-    //Plotly.newPlot('myDiv', data, layout);
-    /*
-        myDiv = document.getElementById('myDiv');
-        //console.log("This is my Div:" + myDiv);
-        Plotly.newPlot(myDiv, [{
-            x: [1, 2, 3, 4, 5],
-            y: [1, 2, 4, 8, 16]
-        }], {
-            margin: { t: 0 }
-        });
-        */
+    describe(`Canvas mit dem Text "${canvasText}" in der Mitte.`);
 }
 
 function gotResult(results) {
@@ -101,59 +90,48 @@ function gotFile(file) {
 }
 
 function createResultRow(imageSrc, results, divName) {
-    let container = document.getElementById(divName);
+let container = document.getElementById(divName);
 
-    // Row erstellen
     let row = document.createElement('div');
     row.className = 'row';
 
-    // Bild
     let imgDiv = document.createElement('div');
     imgDiv.className = 'image-container';
+    let imgEl = document.createElement('img');
+    imgEl.src = imageSrc;
+    imgDiv.appendChild(imgEl);
 
-    let img = document.createElement('img');
-    img.src = imageSrc;
-    imgDiv.appendChild(img);
-
-    // Chart Div (wichtig: eindeutige ID!)
     let chartDiv = document.createElement('div');
     chartDiv.className = 'chart-container';
 
-    if (divName == "results"){
-        if (imageSrc.includes("good")){
-            row.className = 'green';
-        }
-        else{
-            row.className = 'red';
-        }
+    if (divName === "results") {
+      row.className = imageSrc.includes("good") ? 'row green' : 'row red';
     }
 
     let chartId = 'chart-' + Date.now();
     chartDiv.id = chartId;
 
-    // Row zusammenbauen
     row.appendChild(imgDiv);
     row.appendChild(chartDiv);
     container.appendChild(row);
 
-    // Daten vorbereiten
     let labels = results.map(r => r.label);
     let values = results.map(r => r.confidence);
+    let data = [{ values, labels, type: 'pie' }];
 
-    let data = [{
-        values: values,
-        labels: labels,
-        type: 'pie',
-        //textinfo: 'label+percent'
-    }];
-
-    let layout = {
-        height: 400,
-        width: 600
+    let localLayout = {
+      height: 260,
+      autosize: true,
+      paper_bgcolor: 'rgba(0,0,0,0)',
+      plot_bgcolor:  'rgba(0,0,0,0)',
+      font: { color: '#1a1a1a', family: 'IBM Plex Mono', size: 11 },
+      margin: { t: 10, b: 10, l: 10, r: 10 },
+      showlegend: true,
+      legend: { font: { size: 10 }, orientation: 'v' },
+      colorway: ['#1a1a1a','#555','#888','#aaa','#ccc','#e0e0e0']
     };
 
-    // Plot zeichnen
-    Plotly.newPlot(chartId, data, layout);
+    Plotly.newPlot(chartId, data, localLayout, { responsive: true, displayModeBar: false });
 }
 
 function loadDefaultImages() {
