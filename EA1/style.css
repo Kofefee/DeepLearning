@@ -41,8 +41,6 @@ img {
   max-width: 300px;
 }
 
-@use "@material/image-list";
-
-.my-image-list {
-  @include image-list.standard-columns(5);
+#layout-results {
+  width: 50%;
 }
