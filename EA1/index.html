@@ -2,6 +2,13 @@
 <html lang="en">
 
 <head>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=IBM+Plex+Mono:wght@300;400&display=swap"
+        rel="stylesheet" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+
     <script src="https://cdn.jsdelivr.net/npm/p5@1.11.12/lib/p5.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/p5@1.11.12/lib/addons/p5.sound.min.js"></script>
     <script src="https://unpkg.com/ml5@1/dist/ml5.min.js"></script>
@@ -15,29 +22,39 @@
 </head>
 
 <body>
-    <!-- VORKLASSIFIZIERTE BILDER -->
-    <div id="preclassified">
 
-        <h2>Richtige Bilder</h2>
-        <div id="results-good" class="results-grid"></div>
+    <div class="page">
 
-        <h2>Falsche Bilder</h2>
-        <div id="results-bad" class="results-grid"></div>
+  <header>
+    <h1>Image Classifier</h1>
+    <p>ml5 · MobileNet</p>
+  </header>
 
+  <!-- Div 1: Vorgeladene Klassifizierungen -->
+  <div class="section">
+    <div class="section-header">
+      <h2>Vorgeladene Bilder</h2>
+      <span>Klassifizierungen</span>
     </div>
+    <div class="group-label">Good</div>
+    <div id="results-good"></div>
+    <div class="group-label">Bad</div>
+    <div id="results-bad"></div>
+  </div>
 
-    <!-- UPLOAD BEREICH -->
-    <div id="upload-section">
-
-        <h2>Eigene Bilder hochladen</h2>
-
-        <!-- Canvas kommt hier rein -->
-        <div id="canvas-container"></div>
-
-        <div id="uploadedImages" class="results-grid"></div>
-
+  <!-- Div 2: Eigene Bilder -->
+  <div class="section">
+    <div class="section-header">
+      <h2>Eigene Klassifizierung</h2>
+      <span>Drag &amp; Drop</span>
     </div>
+    <div id="canvas-wrapper">
+      <p class="canvas-hint">Bilddatei auf die Fläche ziehen</p>
+    </div>
+    <div id="uploadedImages"></div>
+  </div>
 
+</div>
 
 </body>
 
