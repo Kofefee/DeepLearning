@@ -40,7 +40,7 @@ function setup() {
 
 
     classifier = ml5.imageClassifier("MobileNet", () => {
-    loadDefaultImages();
+        loadDefaultImages();
     });
     // Default-Bilder laden
     //loadDefaultImages();
@@ -80,12 +80,10 @@ function gotResult(results) {
 function gotFile(file) {
     if (file.type === 'image') {
         let imgElement = createImg(file.data, '').hide();
-
-        // Klassifizieren und Bild + Chart erzeugen
-        classifier.classify(imgElement.elt, (results) => {
+        classifier.classifyStart(imgElement.elt, (results) => {
+            classifier.classifyStop();
             createResultRow(file.data, results, 'uploadedImages');
         });
-
     } else {
         canvasText = 'Not an image file!';
         redraw();
@@ -93,7 +91,7 @@ function gotFile(file) {
 }
 
 function createResultRow(imageSrc, results, divName) {
-let container = document.getElementById(divName);
+    let container = document.getElementById(divName);
 
     let row = document.createElement('div');
     row.className = 'row';
@@ -108,7 +106,7 @@ let container = document.getElementById(divName);
     chartDiv.className = 'chart-container';
 
     if (divName === "results") {
-      row.className = imageSrc.includes("good") ? 'row green' : 'row red';
+        row.className = imageSrc.includes("good") ? 'row green' : 'row red';
     }
 
     let chartId = 'chart-' + Date.now();
@@ -123,15 +121,15 @@ let container = document.getElementById(divName);
     let data = [{ values, labels, type: 'pie' }];
 
     let localLayout = {
-      height: 260,
-      autosize: true,
-      paper_bgcolor: 'rgba(0,0,0,0)',
-      plot_bgcolor:  'rgba(0,0,0,0)',
-      font: { color: '#1a1a1a', family: 'IBM Plex Mono', size: 11 },
-      margin: { t: 10, b: 10, l: 10, r: 10 },
-      showlegend: true,
-      legend: { font: { size: 10 }, orientation: 'v' },
-      colorway: ['#1a1a1a','#555','#888','#aaa','#ccc','#e0e0e0']
+        height: 260,
+        autosize: true,
+        paper_bgcolor: 'rgba(0,0,0,0)',
+        plot_bgcolor: 'rgba(0,0,0,0)',
+        font: { color: '#1a1a1a', family: 'IBM Plex Mono', size: 11 },
+        margin: { t: 10, b: 10, l: 10, r: 10 },
+        showlegend: true,
+        legend: { font: { size: 10 }, orientation: 'v' },
+        colorway: ['#1a1a1a', '#555', '#888', '#aaa', '#ccc', '#e0e0e0']
     };
 
     Plotly.newPlot(chartId, data, localLayout, { responsive: true, displayModeBar: false });
@@ -143,14 +141,10 @@ function loadDefaultImages() {
         img.src = src;
 
         img.onload = () => {
-            classifier.classify(img, (results) => {
-
-                if (src.includes("good")) {
-                    createResultRow(src, results, 'results-good');
-                } else {
-                    createResultRow(src, results, 'results-bad');
-                }
-
+            classifier.classifyStart(img, (results) => {
+                classifier.classifyStop();
+                const target = src.includes("good") ? 'results-good' : 'results-bad';
+                createResultRow(src, results, target);
             });
         };
     });
