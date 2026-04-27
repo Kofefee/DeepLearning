@@ -136,17 +136,26 @@ function createResultRow(imageSrc, results, divName) {
 }
 
 function loadDefaultImages() {
-    defaultImages.forEach(src => {
-        let img = new Image();
-        img.src = src;
+    let i = 0;
 
-        img.onload = () => {
-            classifier.classifyStart(img, (results) => {
+    function classifyNext() {
+        if (i >= defaultImages.length) return;
+
+        let src = defaultImages[i];
+        i++;
+
+        let imgEl = new Image();
+        imgEl.src = src;
+        imgEl.onload = () => {
+            classifier.classifyStart(imgEl, (results) => {
                 classifier.classifyStop();
                 const target = src.includes("good") ? 'results-good' : 'results-bad';
                 createResultRow(src, results, target);
+                classifyNext(); // erst wenn fertig, nächstes Bild
             });
         };
-    });
+    }
+
+    classifyNext();
 }
 
