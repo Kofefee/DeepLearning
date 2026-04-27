@@ -21,10 +21,10 @@ let defaultImages = [
 ];
 
 function preload() {
-    classifier = ml5.imageClassifier("MobileNet");
+    //classifier = ml5.imageClassifier("MobileNet");
     img = loadImage("images/good1.jpg");
 
-    loadDefaultImages(); // HIER aufrufen!
+    //loadDefaultImages(); // HIER aufrufen!
 }
 
 function setup() {
@@ -39,6 +39,8 @@ function setup() {
     noLoop();
 
 
+    classifier = ml5.imageClassifier("MobileNet", () => {
+    loadDefaultImages();
     // Default-Bilder laden
     //loadDefaultImages();
 }
