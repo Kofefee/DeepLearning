@@ -163,7 +163,13 @@ function loadDefaultImages() {
 
         img.onload = () => {
             classifier.classify(img, (results) => {
-                createResultRow(src, results, 'results');
+
+                if (src.includes("good")) {
+                    createResultRow(src, results, 'results-good');
+                } else {
+                    createResultRow(src, results, 'results-bad');
+                }
+
             });
         };
     });

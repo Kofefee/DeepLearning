@@ -1,46 +1,56 @@
-html,
 body {
-  margin: 2%;
-  padding: 0;
+    font-family: Arial, sans-serif;
+    margin: 20px;
 }
 
-canvas {
-  display: block;
+h2 {
+    margin-top: 40px;
 }
 
+/* Hauptbereiche */
+#preclassified {
+    margin-bottom: 50px;
+}
+
+#upload-section {
+    padding-top: 20px;
+    border-top: 2px solid #ccc;
+}
+
+/* Grid für Bilder + Charts */
+.results-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+/* Jede Bild-Zeile */
 .row {
-  display: flex;
-  align-items: center;
-  margin: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+    border-radius: 10px;
+    background: #f5f5f5;
 }
 
-.image-container {
-  margin: 20px;
+/* Bild */
+.image-container img {
+    max-width: 200px;
+    border-radius: 8px;
 }
 
+/* Chart */
 .chart-container {
-  width: 800px;
-  height: 500px;
+    width: 250px;
+    height: 250px;
 }
 
+/* Farbkennzeichnung */
 .green {
-  display: flex;
-  align-items: center;
-  margin: 40px;
-  border: solid, 20px, green;
+    border: 3px solid #4CAF50;
 }
 
 .red {
-  display: flex;
-  align-items: center;
-  margin: 40px;
-  border: solid, 20px, red;
-}
-
-img {
-  max-width: 300px;
-}
-
-#layout-results {
-  width: 50%;
+    border: 3px solid #F44336;
 }
