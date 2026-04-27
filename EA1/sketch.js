@@ -41,6 +41,7 @@ function setup() {
 
     classifier = ml5.imageClassifier("MobileNet", () => {
     loadDefaultImages();
+    });
     // Default-Bilder laden
     //loadDefaultImages();
 }
