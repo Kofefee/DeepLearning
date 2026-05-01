@@ -73,7 +73,6 @@ function gotResult(results) {
         hoverinfo: 'label+percent+value'
     }];
 
-    // Chart neu zeichnen
     Plotly.newPlot('myDiv', data, layout);
 }
 
@@ -98,6 +97,7 @@ function createResultRow(imageSrc, results, divName) {
 
     let imgDiv = document.createElement('div');
     imgDiv.className = 'image-container';
+    
     let imgEl = document.createElement('img');
     imgEl.src = imageSrc;
     imgDiv.appendChild(imgEl);
