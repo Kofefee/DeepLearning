@@ -61,14 +61,17 @@
           Eingabebilder abhängt. Einige Bilder wurden nur mit geringer Sicherheit korrekt erkannt, insbesondere wenn das
           Objekt oder Tier aus ungewöhnlichen Perspektiven aufgenommen wurde. Dagegen lieferten Bilder aus gut
           strukturierten Quellen, wie beispielsweise von Wikipedia, häufig deutlich bessere Ergebnisse, was darauf
-          hindeutet, dass ähnliche Bildtypen oder die exakt gleichen Bilder im Trainingsdatensatz enthalten sind oder waren.
-          <br>
+          hindeutet, dass ähnliche Bildtypen oder die exakt gleichen Bilder im Trainingsdatensatz enthalten sind oder
+          waren.</p>
+        <br>
+        <p>
           Ein weiterer Einflussfaktor ist der Hintergrund des Bildes. Je unruhiger oder komplexer dieser ist, desto
           schlechter fällt in vielen Fällen die Erkennung aus, da das Modell Schwierigkeiten hat, das eigentliche Objekt
           klar zu isolieren. Auch Farbveränderungen wirken sich messbar auf die Ergebnisse aus. Bereits leichte
           Farbfilter, beispielsweise mit Adobe Photoshop hinzugefügt, führten zu spürbaren Veränderungen der
-          Confidence-Werte.
-          <br>
+          Confidence-Werte.</p>
+        <br>
+        <p>
           Zudem wurde deutlich, dass das verwendete Modell nicht auf alle möglichen Objekte spezialisiert ist. Bestimmte
           Figuren oder spezielle Motive werden nicht zuverlässig erkannt, wenn sie nicht Bestandteil des
           Trainingsdatensatzes waren. Ein Beispiel dafür ist die Figur Big Bird aus der Sesamstraße, die vom Modell
@@ -92,8 +95,9 @@
           Visualisierung abzudecken. Die Benutzeroberfläche sowie das Canvas und die Drag-and-Drop-Funktionalität werden
           mit p5.js realisiert. Für die Bildklassifikation wird ml5.js verwendet, das auf dem Framework TensorFlow.js
           basiert und ein vortrainiertes MobileNet-Modell im Browser ausführt. Die Darstellung der Ergebnisse erfolgt
-          mit Plotly.js in Form von Kreisdiagrammen.
-          <br>
+          mit Plotly.js in Form von Kreisdiagrammen.</p>
+        <br>
+        <p>
           Eine zentrale Besonderheit ist, dass die gesamte Verarbeitung clientseitig im Browser erfolgt. Zudem werden
           die Bilder asynchron und nacheinander klassifiziert, um stabile Abläufe ohne parallele Modellzugriffe zu
           gewährleisten. Die Ergebnisse werden dynamisch in die Oberfläche eingefügt.
@@ -103,8 +107,9 @@
           Die Anwendung dient dazu, Bilder automatisiert zu klassifizieren und die Ergebnisse verständlich darzustellen.
           Hierfür wird ein vortrainiertes Modell genutzt, das für jedes Bild mehrere mögliche Klassen mit
           Wahrscheinlichkeiten liefert. Diese Daten werden aufbereitet und als Kreisdiagramm visualisiert, sodass die
-          Verteilung der Ergebnisse leicht nachvollziehbar ist.
-          <br>
+          Verteilung der Ergebnisse leicht nachvollziehbar ist.</p>
+        <br>
+        <p>
           Nach dem Laden des Modells werden zunächst Beispielbilder analysiert, zusätzlich können Nutzer eigene Bilder
           per Drag-and-Drop hochladen. Die Verarbeitung erfolgt sequentiell, um Konflikte zu vermeiden und eine
           zuverlässige Ausführung sicherzustellen.
@@ -120,13 +125,18 @@
       </div>
       <div>
         <h4>Bild-Quellen</h4>
-        <a href="https://www.ardalpha.de/wissen/natur/tiere/artenschutz/wo-leben-pinguine-suedpol-nordpol-kaiserpinguin-lebensraum-steckbrief-klimawandel-100.html">Pinguine</a>
-        <a href="https://www.tierchenwelt.de/images/stories/fotos/voegel/papageien/wellensittich/wellensittiche_l.jpg">Wellensittiche</a>
+        <a
+          href="https://www.ardalpha.de/wissen/natur/tiere/artenschutz/wo-leben-pinguine-suedpol-nordpol-kaiserpinguin-lebensraum-steckbrief-klimawandel-100.html">Pinguine</a>
+        <a
+          href="https://www.tierchenwelt.de/images/stories/fotos/voegel/papageien/wellensittich/wellensittiche_l.jpg">Wellensittiche</a>
         <a href="https://dailychickens.com/wp-content/uploads/2023/08/Serama-961x1200.jpg">Hahn</a>
 
-        <a href="https://www.middlebury.edu/sites/default/files/styles/432x576/public/2019-08/big-bird-portrait_0.jpg?fv=q5iSmszr&itok=iKJ6Hrs5">Big Bird</a>
+        <a
+          href="https://www.middlebury.edu/sites/default/files/styles/432x576/public/2019-08/big-bird-portrait_0.jpg?fv=q5iSmszr&itok=iKJ6Hrs5">Big
+          Bird</a>
         <a href="https://www.peakpx.com/en/hd-wallpaper-desktop-klpft">Taube</a>
-        <a href="https://i.etsystatic.com/43393564/r/il/6048df/7329913649/il_fullxfull.7329913649_kpmg.jpg">Perlenohrringe</a>
+        <a
+          href="https://i.etsystatic.com/43393564/r/il/6048df/7329913649/il_fullxfull.7329913649_kpmg.jpg">Perlenohrringe</a>
 
         <br>
         <h4>Research-Quellen</h4>
@@ -134,8 +144,10 @@
         <a href="https://docs.ml5js.org/#/learn/ml5-glossary">ml5.js Glossar</a>
         <a href="https://www.w3schools.com/html/html5_draganddrop.asp">html drag and drop</a>
         <a href="https://plotly.com/javascript/pie-charts/">plotly pie chart integration</a>
-        <a href="https://stackoverflow.com/questions/18146354/how-can-i-cut-a-string-after-x-characters">Cut String after x characters</a>
-        <a href="https://stackoverflow.com/questions/11918491/using-two-css-classes-on-one-element">Using two ccs classes on one element</a>
+        <a href="https://stackoverflow.com/questions/18146354/how-can-i-cut-a-string-after-x-characters">Cut String
+          after x characters</a>
+        <a href="https://stackoverflow.com/questions/11918491/using-two-css-classes-on-one-element">Using two ccs
+          classes on one element</a>
         <a href="https://www.w3schools.com/java/ref_string_contains.asp">string contains()</a>
       </div>
 
