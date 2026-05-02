@@ -159,7 +159,10 @@ function loadDefaultImages() {
         let imgEl = new Image();
         imgEl.src = src;
         imgEl.onload = () => {
+            let done = false;
             classifier.classifyStart(imgEl, (results) => {
+                if (done) return;
+                done = true;
                 classifier.classifyStop();
                 const target = src.includes("good") ? 'results-good' : 'results-bad';
                 createResultRow(src, results, target);
