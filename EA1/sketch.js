@@ -79,7 +79,10 @@ function gotResult(results) {
 function gotFile(file) {
     if (file.type === 'image') {
         let imgElement = createImg(file.data, '').hide();
+        let done = false;
         classifier.classifyStart(imgElement.elt, (results) => {
+            if (done) return;
+            done = true;
             classifier.classifyStop();
             createResultRow(file.data, results, 'uploadedImages');
         });
