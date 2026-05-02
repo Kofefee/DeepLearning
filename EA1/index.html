@@ -50,14 +50,29 @@
       <div id="uploadedImages"></div>
     </div>
 
-        <div class="section">
+    <div class="section">
       <div class="section-header">
         <h2>Diskussion</h2>
         <span>Diskussion</span>
       </div>
       <div>
         <p>
-          XXX - Diskussion
+          In der praktischen Anwendung zeigte sich, dass die Klassifikation stark von den Eigenschaften der
+          Eingabebilder abhängt. Einige Bilder wurden nur mit geringer Sicherheit korrekt erkannt, insbesondere wenn das
+          Objekt oder Tier aus ungewöhnlichen Perspektiven aufgenommen wurde. Dagegen lieferten Bilder aus gut
+          strukturierten Quellen, wie beispielsweise von Wikipedia, häufig deutlich bessere Ergebnisse, was darauf
+          hindeutet, dass ähnliche Bildtypen im Trainingsdatensatz enthalten waren.
+          Ein weiterer Einflussfaktor ist der Hintergrund des Bildes. Je unruhiger oder komplexer dieser ist, desto
+          schlechter fällt in vielen Fällen die Erkennung aus, da das Modell Schwierigkeiten hat, das eigentliche Objekt
+          klar zu isolieren. Auch Farbveränderungen wirken sich messbar auf die Ergebnisse aus. Bereits leichte
+          Farbfilter, beispielsweise mit Adobe Photoshop hinzugefügt, führten zu spürbaren Veränderungen der
+          Confidence-Werte.
+          Zudem wurde deutlich, dass das verwendete Modell nicht auf alle möglichen Objekte spezialisiert ist. Bestimmte
+          Figuren oder spezielle Motive werden nicht zuverlässig erkannt, wenn sie nicht Bestandteil des
+          Trainingsdatensatzes waren. Ein Beispiel dafür ist die Figur Big Bird aus der Sesamstraße, die vom Modell
+          nicht korrekt identifiziert werden konnte. Insgesamt zeigt sich, dass die Qualität und Ähnlichkeit der
+          Eingabedaten zum Trainingsdatensatz einen entscheidenden Einfluss auf die Klassifikation haben.
+
         </p>
       </div>
     </div>
@@ -68,8 +83,29 @@
         <span>Dokumentation</span>
       </div>
       <div>
+        <h4>Technische Aspekte</h4>
         <p>
-          XXX - Dokumentation
+          Technisch:
+          In der Umsetzung werden mehrere JavaScript-Bibliotheken kombiniert, um Interaktion, Bildklassifikation und
+          Visualisierung abzudecken. Die Benutzeroberfläche sowie das Canvas und die Drag-and-Drop-Funktionalität werden
+          mit p5.js realisiert. Für die Bildklassifikation wird ml5.js verwendet, das auf dem Framework TensorFlow.js
+          basiert und ein vortrainiertes MobileNet-Modell im Browser ausführt. Die Darstellung der Ergebnisse erfolgt
+          mit Plotly.js in Form von Kreisdiagrammen.
+          Eine zentrale Besonderheit ist, dass die gesamte Verarbeitung clientseitig im Browser erfolgt. Zudem werden
+          die Bilder asynchron und nacheinander klassifiziert, um stabile Abläufe ohne parallele Modellzugriffe zu
+          gewährleisten. Die Ergebnisse werden dynamisch in die Oberfläche eingefügt.
+        </p>
+        <h4>Fachliche Aspekte</h4>
+        <p>
+          Die Anwendung dient dazu, Bilder automatisiert zu klassifizieren und die Ergebnisse verständlich darzustellen.
+          Hierfür wird ein vortrainiertes Modell genutzt, das für jedes Bild mehrere mögliche Klassen mit
+          Wahrscheinlichkeiten liefert. Diese Daten werden aufbereitet und als Kreisdiagramm visualisiert, sodass die
+          Verteilung der Ergebnisse leicht nachvollziehbar ist.
+          Nach dem Laden des Modells werden zunächst Beispielbilder analysiert, zusätzlich können Nutzer eigene Bilder
+          per Drag-and-Drop hochladen. Die Verarbeitung erfolgt sequentiell, um Konflikte zu vermeiden und eine
+          zuverlässige Ausführung sicherzustellen. Insgesamt entsteht eine interaktive Anwendung, die Bildklassifikation
+          im Browser demonstriert und die Ergebnisse anschaulich darstellt.
+
         </p>
       </div>
     </div>
