@@ -123,13 +123,11 @@ function createResultRow(imageSrc, results, divName) {
     let values = results.map(r => r.confidence);
     let data = [{ values, labels, type: 'pie' }];
 
-    let colorway;
+    let colorway = ['#1a1a1a', '#555', '#888', '#aaa', '#ccc', '#e0e0e0'];
     if (imageSrc.includes("good")) {
         colorway = ['#2d6a4f', '#52b788', '#95d5b2', '#b7e4c7', '#d8f3dc', '#f0faf3'];
     } else if (imageSrc.includes("bad")) {
         colorway = ['#7d0000', '#c1121f', '#e63946', '#f4a261', '#f8c8a0', '#fde8d8'];
-    } else {
-        colorway = ['#1a1a1a', '#555', '#888', '#aaa', '#ccc', '#e0e0e0'];
     }
 
     let localLayout = {
@@ -144,7 +142,9 @@ function createResultRow(imageSrc, results, divName) {
         colorway: colorway
     };
 
+    console.log(colorway);
     Plotly.newPlot(chartId, data, localLayout, { responsive: true, displayModeBar: false });
+    
 }
 
 function loadDefaultImages() {
