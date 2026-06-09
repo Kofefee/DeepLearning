@@ -1,0 +1,112 @@
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 13px;
+    max-width: 960px;
+    margin: 40px auto;
+    padding: 0 20px;
+    background: #fff;
+    color: #111;
+}
+
+h2 {
+    font-size: 13px;
+    font-weight: bold;
+    margin: 32px 0 8px;
+}
+
+p {
+    margin: 4px 0 12px;
+    color: #555;
+}
+
+.row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.chart-wrap {
+    position: relative;
+    height: 220px;
+    border: 1px solid #ddd;
+}
+
+.mse {
+    font-size: 12px;
+    color: #333;
+    margin-top: 4px;
+}
+
+#status {
+    color: #888;
+    margin-bottom: 24px;
+}
+
+hr {
+    border: none;
+    border-top: 1px solid #eee;
+    margin: 32px 0;
+}
+
+section {
+    margin-bottom: 24px;
+}
+
+table {
+    border-collapse: collapse;
+    font-size: 12px;
+}
+
+td,
+th {
+    border: 1px solid #ddd;
+    padding: 4px 8px;
+    text-align: left;
+}
+/* Buttons */
+.controls {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+button {
+    font-family: monospace;
+    font-size: 11px;
+    padding: 4px 10px;
+    border: 1px solid #ccc;
+    background: #fff;
+    cursor: pointer;
+}
+
+button:hover { background: #f0f0f0; }
+button:disabled { opacity: .4; cursor: default; }
+
+/* Validierungsbox */
+#validation-log {
+    font-size: 11px;
+    color: #444;
+    background: #fafafa;
+    border: 1px solid #ddd;
+    padding: 6px 10px;
+    margin-bottom: 16px;
+    white-space: pre;
+    line-height: 1.7;
+}
+
+/* Loss-Kurven */
+.loss-wrap {
+    height: 160px;
+    border: 1px solid #ddd;
+    margin-top: 8px;
+    margin-bottom: 4px;
+}
+
+.loss-label {
+    font-size: 11px;
+    color: #888;
+    margin-top: 8px;
+    margin-bottom: 2px;
+}

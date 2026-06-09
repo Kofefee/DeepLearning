@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>FFNN Regression</title>
+
+    <!-- Import TensorFlow.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@2.0.0/dist/tf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+    <link rel="stylesheet" type="text/css" href="style.css">
+
+
+<body>
+
+    <h1 style="font-size:15px; font-weight:bold;">FFNN Regression</h1>
+    <div id="status">Es lädt...</div>
+
+    <div class="controls">
+        <button id="btn-run">Neu starten (neue Daten + Training)</button>
+        <button id="btn-load">Gespeicherte Daten &amp; Modelle laden</button>
+        <button id="btn-clear">✕ Alles löschen</button>
+    </div>
+
+    <!-- Datenvalidierung -->
+    <h2>Datenvalidierung</h2>
+    <div id="validation-log">—</div>
+
+    <h2>R1: Datensätze</h2>
+    <div class="row">
+        <div>
+            <div style="font-size:12px; color:#555; margin-bottom:4px;">Ohne Rauschen</div>
+            <div class="chart-wrap"><canvas id="c1"></canvas></div>
+        </div>
+        <div>
+            <div style="font-size:12px; color:#555; margin-bottom:4px;">Mit Rauschen (0.05)</div>
+            <div class="chart-wrap"><canvas id="c2"></canvas></div>
+        </div>
+    </div>
+
+    <h2>R2: Modell ohne Rauschen trainiert</h2>
+    <div class="row">
+        <div>
+            <div style="font-size:12px; color:#555; margin-bottom:4px;">Trainingsdaten</div>
+            <div class="chart-wrap"><canvas id="c3"></canvas></div>
+            <div class="mse">Train MSE: <span id="m1">–</span></div>
+        </div>
+        <div>
+            <div style="font-size:12px; color:#555; margin-bottom:4px;">Testdaten</div>
+            <div class="chart-wrap"><canvas id="c4"></canvas></div>
+            <div class="mse">Test MSE: <span id="m2">–</span></div>
+        </div>
+    </div>
+    <!-- Loss-Kurve R2 -->
+    <div class="loss-label">Verlust über Epochen — Clean-Modell</div>
+    <div class="loss-wrap"><canvas id="lc1"></canvas></div>
+
+    <h2>R3: Best-Fit Modell (noisy)</h2>
+    <div class="row">
+        <div>
+            <div style="font-size:12px; color:#555; margin-bottom:4px;">Trainingsdaten</div>
+            <div class="chart-wrap"><canvas id="c5"></canvas></div>
+            <div class="mse">Train MSE: <span id="m3">–</span></div>
+        </div>
+        <div>
+            <div style="font-size:12px; color:#555; margin-bottom:4px;">Testdaten</div>
+            <div class="chart-wrap"><canvas id="c6"></canvas></div>
+            <div class="mse">Test MSE: <span id="m4">–</span></div>
+        </div>
+    </div>
+    <!-- Loss-Kurve R3 -->
+    <div class="loss-label">Verlust über Epochen — Best-Fit-Modell</div>
+    <div class="loss-wrap"><canvas id="lc2"></canvas></div>
+
+    <h2>R4: Overfit Modell (noisy)</h2>
+    <div class="row">
+        <div>
+            <div style="font-size:12px; color:#555; margin-bottom:4px;">Trainingsdaten</div>
+            <div class="chart-wrap"><canvas id="c7"></canvas></div>
+            <div class="mse">Train MSE: <span id="m5">–</span></div>
+        </div>
+        <div>
+            <div style="font-size:12px; color:#555; margin-bottom:4px;">Testdaten</div>
+            <div class="chart-wrap"><canvas id="c8"></canvas></div>
+            <div class="mse">Test MSE: <span id="m6">–</span></div>
+        </div>
+    </div>
+    <!-- Loss-Kurve R4 -->
+    <div class="loss-label">Verlust über Epochen — Overfit-Modell</div>
+    <div class="loss-wrap"><canvas id="lc3"></canvas></div>
+
+    <hr>
+
+    <h2>Diskussion</h2>
+    <p>
+        Das Clean-Modell zeigt auf Train- und Testdaten nahezu identische MSE-Werte, da alle Punkte exakt auf der
+        Ground-Truth liegen. Overfitting ist hier unmöglich: es gibt kein Rauschen, das auswendig gelernt werden könnte
+        – perfektes Fitting bedeutet gleichzeitig perfekte Generalisierung.<br><br>
+        Das Best-Fit-Modell wurde auf verrauschten Daten mit 300 Epochen trainiert. Train- und Test-MSE liegen nahe
+        beieinander, was gute Generalisierung zeigt. Das Modell lernt die Struktur der Funktion, nicht das
+        Rauschen.<br><br>
+        Das Overfit-Modell wurde mit 5000 Epochen trainiert. Der Train-MSE sinkt deutlich tiefer als der Test-MSE – das
+        Netz hat das Rauschen der Trainingsdaten memoriert und generalisiert schlechter. In den Plots sieht man stärkere
+        Abweichungen zwischen den Datenpunkten.<br><br>
+        Testdaten wurden nie für Training oder Early Stopping verwendet, sondern nur zur finalen Auswertung.
+    </p>
+
+    <hr>
+
+    <h2>Dokumentation</h2>
+    <p><b>Frameworks:</b></p>
+    <table>
+        <tr>
+            <th>Framework</th>
+            <th>Verwendung</th>
+        </tr>
+        <tr>
+            <td>TensorFlow.js 4.17</td>
+            <td>Modellaufbau, Training, Inferenz im Browser. Speicherung via IndexedDB.</td>
+        </tr>
+        <tr>
+            <td>Chart.js 4.4</td>
+            <td>Darstellung der Scatter-Plots, Vorhersagelinien und Verlustkurven.</td>
+        </tr>
+    </table>
+    <p style="margin-top:12px;"><b>Parameter:</b></p>
+    <table>
+        <tr>
+            <th>Parameter</th>
+            <th>Wert</th>
+        </tr>
+        <tr>
+            <td>Architektur</td>
+            <td>2 Hidden Layer × 100 Neuronen, ReLU, Output linear</td>
+        </tr>
+        <tr>
+            <td>Optimizer</td>
+            <td>Adam, lr=0.01, Batch 32</td>
+        </tr>
+        <tr>
+            <td>Epochen Clean</td>
+            <td>500</td>
+        </tr>
+        <tr>
+            <td>Epochen Best-Fit</td>
+            <td>300</td>
+        </tr>
+        <tr>
+            <td>Epochen Overfit</td>
+            <td>5000</td>
+        </tr>
+        <tr>
+            <td>Rauschen</td>
+            <td>Gaussian Noise, σ²=0.05 (Box-Muller)</td>
+        </tr>
+    </table>
+
+    <p style="margin-top:12px;"><b>Implementierung:</b> Datengenerierung mit Math.random() gleichverteilt auf [-2,2],
+        Gaussian Noise via Box-Muller-Transformation. Modelle werden nach dem ersten Training in der Browser-IndexedDB
+        gespeichert und bei erneutem Laden direkt geladen. Datensatz wird im localStorage gespeichert, sodass
+        MSE-Werte und Plots nach dem Reload stets konsistent zu den gespeicherten Modellen passen.
+        Testdaten fließen nicht ins Training ein.</p>
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>
