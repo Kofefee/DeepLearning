@@ -129,17 +129,27 @@
     <hr>
 
     <h2>Diskussion</h2>
-    <p>
-        Das Clean-Modell zeigt auf Train- und Testdaten beinahe gleiche MSE-Werte, da alle Punkte exakt auf der
+    <p> Die Netzwerkarchitektur (2 Hidden Layer × 100 Neuronen, ReLU, Adam lr=0.01, Batch 32) wurde direkt aus der
+        Aufgabenstellung übernommen.
+
+        Das Clean-Modell erreicht nach 500 Epochen auf Train- und Testdaten beinahe gleiche MSE-Werte, da alle Punkte
+        exakt auf der
         Ground-Truth liegen. Overfitting geht nicht: es gibt kein Rauschen, das auswendig gelernt werden
-        könnte.<br><br>
+        könnte. <br><br>
         Das Best-Fit-Modell wurde auf verrauschten Daten mit 300 Epochen trainiert. Train- und Test-MSE liegen nahe
         beieinander. Bedeutet also eine gute Generalisierung. Das Modell lernt die Struktur der Funktion, nicht das
         Rauschen.<br><br>
-        Das Overfit-Modell wurde mit 5000 Epochen trainiert. Der Train-MSE sinkt deutlich tiefer als der Test-MSE.
-        Die Trainingsdaten wurden zu sehr gelernt und deswegen generalisiert es schlechter. In den Diagrammen sieht man
-        stärkere
-        Abweichungen zwischen den Datenpunkten.<br><br>
+        Das Overfit-Modell mit 5000 Epochen zeigt klar das Overfitting. Das sieht man auch gut im Diagramm, da auch die
+        kleinen Ausreißer
+        des Graphen durch die linie gut abgebildet werden. Diese wurden also "mitgelernt". Experimente mit weniger Daten
+        (N=20 statt 100) verstärken Overfitting deutlich. Eine höhere Lernrate (lr=0.05) führte zu instabilem Training
+        mit springendem Loss, während lr=0.001 langsamer
+        aber stabiler konvergierte. Die Epochenzahl ist der stärkste Hebel gegen Overfitting. Wenn man zu früh stoppt
+        gibt es ein Underfitting. Stoppt man zu spät, gibt es ein overfitting. Um ein bisschen näher an den Idealpunkt
+        zu kommen, kann man den Validierungsdatensatz benutzen um das Training zu optimieren. Testdaten flossen nicht
+        ins Training ein und dienten final nur zur Auswertung.
+        <br><br>
+
     </p>
 
     <hr>
