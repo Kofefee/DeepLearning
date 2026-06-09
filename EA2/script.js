@@ -1,3 +1,6 @@
+let customModel = null;
+const charts = {};
+
 // Ground Truth Funktion (aus Aufgabe angegegben)
 function y(x) {
     return 0.5 * (x + 0.8) * (x + 1.8) * (x - 0.2) * (x - 0.3) * (x - 1.9) + 1;
@@ -16,6 +19,13 @@ function boxMullerTransform() {
 function noise(variance) {
     const noisyboy = Math.sqrt(variance);
     return boxMullerTransform() * noisyboy;
+}
+
+function destroyChart(id) {
+    if (charts[id]) {
+        charts[id].destroy();
+        delete charts[id];
+    }
 }
 
 // datensatz speichern und laden
@@ -80,7 +90,7 @@ function validateDataset(d) {
     log.push(`${overlap === 0 ? '✓' : '✗'} Train/Test-Überschneidung: ${overlap} Punkte`);
     if (overlap > 0) ok = false;
 
-    log.push(`→ Validierung ${ok ? 'BESTANDEN' : 'FEHLGESCHLAGEN'}`);
+    log.push(`→ Validierung ${ok ? 'bestanden' : 'fail'}`);
     return { ok, log: log.join('\n') };
 }
 
@@ -244,30 +254,67 @@ const opts = {
 // blau: Trainingsdaten 
 // rot: Testdaten
 function scatter(id, a, b) {
-    new Chart(document.getElementById(id), {
-        type: 'scatter',
-        data: {
-            datasets: [
-                { data: a.map(d => ({ x: d.x, y: d.y })), backgroundColor: '#4488ff88', pointRadius: 3 },
-                { data: b.map(d => ({ x: d.x, y: d.y })), backgroundColor: '#ff448888', pointRadius: 3 }
-            ]
-        },
-        options: opts
-    });
+    let chartStatus = Chart.getChart(document.getElementById(id)); // <canvas> id
+    if (chartStatus != undefined) {
+        chartStatus.destroy();
+    }
+    try {
+        new Chart(document.getElementById(id), {
+            type: 'scatter',
+            data: {
+                datasets: [
+                    { data: a.map(d => ({ x: d.x, y: d.y })), backgroundColor: '#16fa2188', pointRadius: 3 },
+                    { data: b.map(d => ({ x: d.x, y: d.y })), backgroundColor: '#ff44cd88', pointRadius: 3 }
+                ]
+            },
+            options: opts
+        });
+    } catch (e) {
+        new Chart(document.getElementById(id), {
+            type: 'scatter',
+            data: {
+                datasets: [
+                    { data: a.map(d => ({ x: d.x, y: d.y })), backgroundColor: '#16fa2188', pointRadius: 3 },
+                    { data: b.map(d => ({ x: d.x, y: d.y })), backgroundColor: '#ff44cd88', pointRadius: 3 }
+                ]
+            },
+            options: opts
+        });
+    }
+
 }
 
 // nur linie keine scatter daten
 function predChart(id, pts, line) {
-    new Chart(document.getElementById(id), {
-        type: 'scatter',
-        data: {
-            datasets: [
-                { data: pts.map(d => ({ x: d.x, y: d.y })), backgroundColor: '#4488ff88', pointRadius: 3 },
-                { data: line.xs.map((x, i) => ({ x, y: line.ys[i] })), type: 'line', borderColor: '#111', borderWidth: 1.5, pointRadius: 0 }
-            ]
-        },
-        options: opts
-    });
+    try {
+        new Chart(document.getElementById(id), {
+            type: 'scatter',
+            data: {
+                datasets: [
+                    { data: pts.map(d => ({ x: d.x, y: d.y })), backgroundColor: '#0ba0e188', pointRadius: 3 },
+                    { data: line.xs.map((x, i) => ({ x, y: line.ys[i] })), type: 'line', borderColor: '#111', borderWidth: 1.5, pointRadius: 0 }
+                ]
+            },
+            options: opts
+        });
+    }
+    catch (e) {
+        let chartStatus = Chart.getChart(document.getElementById(id)); // <canvas> id
+        if (chartStatus != undefined) {
+            chartStatus.destroy();
+        }
+        new Chart(document.getElementById(id), {
+            type: 'scatter',
+            data: {
+                datasets: [
+                    { data: pts.map(d => ({ x: d.x, y: d.y })), backgroundColor: '#0ba0e188', pointRadius: 3 },
+                    { data: line.xs.map((x, i) => ({ x, y: line.ys[i] })), type: 'line', borderColor: '#111', borderWidth: 1.5, pointRadius: 0 }
+                ]
+            },
+            options: opts
+        });
+    }
+
 }
 
 // Loss-Kurve über Epochen
@@ -284,13 +331,18 @@ function lossChart(id, history) {
         data.push(history[i]);
     }
 
+    let chartStatus = Chart.getChart(document.getElementById(id)); // <canvas> id
+    if (chartStatus != undefined) {
+        chartStatus.destroy();
+    }
+
     new Chart(document.getElementById(id), {
         type: 'line',
         data: {
             labels: labels,
             datasets: [{
                 data: data,
-                borderColor: '#4488ff',
+                borderColor: '#0ba0e188',
                 borderWidth: 1.5,
                 pointRadius: 0,
                 fill: false,
@@ -318,7 +370,7 @@ function lossChart(id, history) {
 
 //Buttons de/aktivieren während Training läuft
 function setBtns(disabled) {
-    ['btn-run', 'btn-load', 'btn-clear'].forEach(id => {
+    ['btn-run', 'btn-load', 'btn-clear', 'btn-custom', 'btn-save-custom', 'btn-load-custom'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.disabled = disabled;
     });
@@ -368,7 +420,7 @@ async function run(forceNew = false) {
         localStorage.removeItem(LOSS_KEY);
     }
 
-    //Datensatz laden oder neu erzeugen und sofort speichern
+    //Datensatz laden und speichern
     status.textContent = 'Daten vorbereiten...';
     let d = loadDataset();
     if (!d) { d = genData(); saveDataset(d); }
@@ -384,11 +436,11 @@ async function run(forceNew = false) {
         return;
     }
 
-    // hier einfach nur Test und Trainingsdaten gerendert, braucht man kein Modell für weil die ja schon so vorliegen
+    // hier einfach nur Test und Trainingsdaten gerendert
     scatter('c1', d.trainClean, d.testClean);
     scatter('c2', d.trainNoisy, d.testNoisy);
 
-    // Loss-Histories laden (für den Fall dass Modelle aus Zwischenspeicher kommen)
+    // Loss-Histories laden
     let savedHistories = loadLossHistories();
 
     // Clean Model
@@ -396,7 +448,7 @@ async function run(forceNew = false) {
 
     const { model: mClean, history: hClean, fresh: fClean } = await getOrTrain('clean', d.trainClean, 500, 'Clean', status);
 
-    //History speichern wenn frisch trainiert
+    //History speichern
     if (fClean) { savedHistories.clean = hClean; saveLossHistories(savedHistories); }
 
     const lineC = predLine(mClean);
@@ -429,7 +481,7 @@ async function run(forceNew = false) {
     // Overfitted Model
     status.textContent = 'Overfit-Modell vorbereiten...';
 
-    const { model: mOver, history: hOver, fresh: fOver } = await getOrTrain('over', d.trainNoisy, 5000, 'Overfit', status);
+    const { model: mOver, history: hOver, fresh: fOver } = await getOrTrain('over', d.trainNoisy, 4000, 'Overfit', status);
 
     if (fOver) { savedHistories.over = hOver; saveLossHistories(savedHistories); }
     const lineO = predLine(mOver);
@@ -452,6 +504,7 @@ async function run(forceNew = false) {
 }
 
 // Alles löschen
+/*
 async function clearAll() {
 
     if (!confirm('Alle gespeicherten Daten und Modelle löschen?')) return;
@@ -474,17 +527,127 @@ async function clearAll() {
     if (valEl) valEl.textContent = '—';
     setBtns(false);
 }
-
+*/
 //Buttons beim Laden gespeicherte Daten verwenden
 document.addEventListener('DOMContentLoaded', () => {
-    const btnRun   = document.getElementById('btn-run');
-    const btnLoad  = document.getElementById('btn-load');
+    const btnRun = document.getElementById('btn-run');
+    const btnLoad = document.getElementById('btn-load');
     const btnClear = document.getElementById('btn-clear');
+    const btnCustom = document.getElementById('btn-custom');
+    const btnSaveCustom = document.getElementById('btn-save-custom');
+    const btnLoadCustom = document.getElementById('btn-load-custom');
 
-    if (btnRun)   btnRun.addEventListener('click',   () => run(true));
-    if (btnLoad)  btnLoad.addEventListener('click',  () => run(false));
+    if (btnRun) btnRun.addEventListener('click', () => run(true));
+    if (btnLoad) btnLoad.addEventListener('click', () => run(false));
     if (btnClear) btnClear.addEventListener('click', clearAll);
+    if (btnCustom) btnCustom.addEventListener('click', trainCustomModel);
+    if (btnSaveCustom) btnSaveCustom.addEventListener('click', saveCustomModel);
+    if (btnLoadCustom) btnLoadCustom.addEventListener('click', loadCustomModel);
 
-    // Beim ersten Laden nur gespeicherte Daten verwenden, nicht neu generieren
+    // Beim ersten Laden nur gespeicherte Daten verwenden werden nicht neu generieren
     run(false);
 });
+
+async function trainCustomModel() {
+    const status = document.getElementById('status');
+
+    //Parameter aus den Eingabefeldern lesen
+    const epochs = parseInt(document.getElementById('custom-epochs').value);
+    const lr = parseFloat(document.getElementById('custom-lr').value);
+    const useNoisy = document.getElementById('custom-data').value === 'noisy';
+
+    //Prüfen ob ein Datensatz vorhanden ist
+    const d = loadDataset();
+    if (!d) {
+        status.textContent = 'Kein Datensatz vorhanden — erst "Neu starten" klicken!';
+        return;
+    }
+
+    //Richtigen Datensatz wählen 
+    const trainData = useNoisy ? d.trainNoisy : d.trainClean;
+    const testData = useNoisy ? d.testNoisy : d.testClean;
+
+    //Buttons sperren damit nicht doppelt geklickt wird
+    setBtns(true);
+    status.textContent = `Eigenes Modell wird trainiert (${epochs} Epochen, lr=${lr})...`;
+
+    //Neues Modell mit gewählter Lernrate createn
+    const model = tf.sequential();
+    model.add(tf.layers.dense({ inputShape: [1], units: 100, activation: 'relu' }));
+    model.add(tf.layers.dense({ units: 100, activation: 'relu' }));
+    model.add(tf.layers.dense({ units: 1 }));
+    model.compile({ optimizer: tf.train.adam(lr), loss: 'meanSquaredError' });
+
+    //trainWithHistory für die Loss-Kurve
+    const history = await trainWithHistory(model, trainData, epochs, (epoch, total, loss) => {
+        status.textContent = `Eigenes Modell: ${epoch}/${total} Epochen, Loss: ${loss.toFixed(5)}`;
+    });
+
+    // Modell global speichern damit btn-save-custom drauf zugreifen kann
+    customModel = model;
+
+    //Ergebnis-Bereich einblenden
+    document.getElementById('custom-result').style.display = 'block';
+
+    // Vorhersage-Linie berechnen und Diagramme generieren
+    const line = predLine(model);
+    predChart('cc1', trainData, line);
+    predChart('cc2', testData, line);
+
+    // MSE berechnen und anzeigen
+    document.getElementById('cm1').textContent = mse(model, trainData).toFixed(6);
+    document.getElementById('cm2').textContent = mse(model, testData).toFixed(6);
+
+    //Loss-Kurve zeichnen
+    lossChart('lcc1', history);
+
+    status.textContent = `Eigenes Modell fertig. Train MSE: ${mse(model, trainData).toFixed(6)} | Test MSE: ${mse(model, testData).toFixed(6)}`;
+    setBtns(false);
+}
+
+
+//Eigenes Modell speicher
+async function saveCustomModel() {
+    const status = document.getElementById('status');
+
+    if (!customModel) {
+        status.textContent = 'Kein eigenes Modell vorhanden, bitte erst trainieren!';
+        return;
+    }
+
+    try {
+        await customModel.save('indexeddb://custom-model');
+        status.textContent = 'Eigenes Modell gespeichert.';
+    } catch (err) {
+        console.error(err);
+        status.textContent = 'Fehler beim Speichern.';
+    }
+}
+
+
+//Eigenes Modell laden
+async function loadCustomModel() {
+    const status = document.getElementById('status');
+    const d = loadDataset();
+
+    try {
+        // Aus IndexedDB laden
+        customModel = await tf.loadLayersModel('indexeddb://custom-model');
+
+        // Ergebnis-Bereich einblenden
+        document.getElementById('custom-result').style.display = 'block';
+
+        // Vorhersage neu zeichnen wenn Datensatz vorhanden
+        if (d) {
+            const line = predLine(customModel);
+            predChart('cc1', d.trainNoisy, line);
+            predChart('cc2', d.testNoisy, line);
+            document.getElementById('cm1').textContent = mse(customModel, d.trainNoisy).toFixed(6);
+            document.getElementById('cm2').textContent = mse(customModel, d.testNoisy).toFixed(6);
+        }
+
+        status.textContent = 'Eigenes Modell geladen.';
+    } catch (e) {
+        status.textContent = 'Kein eigenes Modell gefunden.';
+    }
+}

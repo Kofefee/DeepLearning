@@ -5,7 +5,7 @@
     <title>FFNN Regression</title>
 
     <!-- Import TensorFlow.js -->
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@2.0.0/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.17.0/dist/tf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
     <link rel="stylesheet" type="text/css" href="style.css">
 
@@ -16,9 +16,47 @@
     <div id="status">Es lädt...</div>
 
     <div class="controls">
-        <button id="btn-run">Neu starten (neue Daten + Training)</button>
-        <button id="btn-load">Gespeicherte Daten &amp; Modelle laden</button>
-        <button id="btn-clear">✕ Alles löschen</button>
+        <!-- Hauptbuttons: neu trainieren, laden, löschen -->
+        <button id="btn-run">Neu starten (Originaldaten)</button>
+        <!-- <button id="btn-load">Gespeicherte Daten &amp; Modelle laden</button> -->
+        <!-- <button id="btn-clear">✕ Alles löschen</button> -->
+    </div>
+
+    <!-- Eigene Parameter einstellen und ein einzelnes Modell trainieren -->
+    <div class="controls" style="margin-top: 8px;">
+        <label>Epochen: <input id="custom-epochs" type="number" value="300" min="1" style="width:60px"></label>
+        <label>Lernrate: <input id="custom-lr" type="number" value="0.01" step="0.001" min="0.0001"
+                style="width:70px"></label>
+        <label>
+            Daten:
+            <select id="custom-data">
+                <option value="noisy">Verrauscht</option>
+                <option value="clean">Ohne Rauschen</option>
+            </select>
+        </label>
+        <!-- startet trainCustomModel() im script.js -->
+        <button id="btn-custom">Eigenes Modell trainieren</button>
+        <button id="btn-save-custom">Eigenes Modell speichern</button>
+        <button id="btn-load-custom">Eigenes Modell laden</button>
+    </div>
+
+    <!-- Ergebnis des eigenen Modells wird hier angezeigt -->
+    <div id="custom-result" style="display:none; margin-top: 8px;">
+        <h2>Eigenes Modell</h2>
+        <div class="row">
+            <div>
+                <div style="font-size:12px; color:#555; margin-bottom:4px;">Trainingsdaten</div>
+                <div class="chart-wrap"><canvas id="cc1"></canvas></div>
+                <div class="mse">Train MSE: <span id="cm1">–</span></div>
+            </div>
+            <div>
+                <div style="font-size:12px; color:#555; margin-bottom:4px;">Testdaten</div>
+                <div class="chart-wrap"><canvas id="cc2"></canvas></div>
+                <div class="mse">Test MSE: <span id="cm2">–</span></div>
+            </div>
+        </div>
+        <div class="loss-label">Verlust über Epochen — Eigenes Modell</div>
+        <div class="loss-wrap"><canvas id="lcc1"></canvas></div>
     </div>
 
     <!-- Datenvalidierung -->
@@ -92,74 +130,38 @@
 
     <h2>Diskussion</h2>
     <p>
-        Das Clean-Modell zeigt auf Train- und Testdaten nahezu identische MSE-Werte, da alle Punkte exakt auf der
-        Ground-Truth liegen. Overfitting ist hier unmöglich: es gibt kein Rauschen, das auswendig gelernt werden könnte
-        – perfektes Fitting bedeutet gleichzeitig perfekte Generalisierung.<br><br>
+        Das Clean-Modell zeigt auf Train- und Testdaten beinahe gleiche MSE-Werte, da alle Punkte exakt auf der
+        Ground-Truth liegen. Overfitting geht nicht: es gibt kein Rauschen, das auswendig gelernt werden
+        könnte.<br><br>
         Das Best-Fit-Modell wurde auf verrauschten Daten mit 300 Epochen trainiert. Train- und Test-MSE liegen nahe
-        beieinander, was gute Generalisierung zeigt. Das Modell lernt die Struktur der Funktion, nicht das
+        beieinander. Bedeutet also eine gute Generalisierung. Das Modell lernt die Struktur der Funktion, nicht das
         Rauschen.<br><br>
-        Das Overfit-Modell wurde mit 5000 Epochen trainiert. Der Train-MSE sinkt deutlich tiefer als der Test-MSE – das
-        Netz hat das Rauschen der Trainingsdaten memoriert und generalisiert schlechter. In den Plots sieht man stärkere
+        Das Overfit-Modell wurde mit 5000 Epochen trainiert. Der Train-MSE sinkt deutlich tiefer als der Test-MSE.
+        Die Trainingsdaten wurden zu sehr gelernt und deswegen generalisiert es schlechter. In den Diagrammen sieht man
+        stärkere
         Abweichungen zwischen den Datenpunkten.<br><br>
-        Testdaten wurden nie für Training oder Early Stopping verwendet, sondern nur zur finalen Auswertung.
     </p>
 
     <hr>
 
     <h2>Dokumentation</h2>
-    <p><b>Frameworks:</b></p>
-    <table>
-        <tr>
-            <th>Framework</th>
-            <th>Verwendung</th>
-        </tr>
-        <tr>
-            <td>TensorFlow.js 4.17</td>
-            <td>Modellaufbau, Training, Inferenz im Browser. Speicherung via IndexedDB.</td>
-        </tr>
-        <tr>
-            <td>Chart.js 4.4</td>
-            <td>Darstellung der Scatter-Plots, Vorhersagelinien und Verlustkurven.</td>
-        </tr>
-    </table>
-    <p style="margin-top:12px;"><b>Parameter:</b></p>
-    <table>
-        <tr>
-            <th>Parameter</th>
-            <th>Wert</th>
-        </tr>
-        <tr>
-            <td>Architektur</td>
-            <td>2 Hidden Layer × 100 Neuronen, ReLU, Output linear</td>
-        </tr>
-        <tr>
-            <td>Optimizer</td>
-            <td>Adam, lr=0.01, Batch 32</td>
-        </tr>
-        <tr>
-            <td>Epochen Clean</td>
-            <td>500</td>
-        </tr>
-        <tr>
-            <td>Epochen Best-Fit</td>
-            <td>300</td>
-        </tr>
-        <tr>
-            <td>Epochen Overfit</td>
-            <td>5000</td>
-        </tr>
-        <tr>
-            <td>Rauschen</td>
-            <td>Gaussian Noise, σ²=0.05 (Box-Muller)</td>
-        </tr>
-    </table>
 
-    <p style="margin-top:12px;"><b>Implementierung:</b> Datengenerierung mit Math.random() gleichverteilt auf [-2,2],
-        Gaussian Noise via Box-Muller-Transformation. Modelle werden nach dem ersten Training in der Browser-IndexedDB
-        gespeichert und bei erneutem Laden direkt geladen. Datensatz wird im localStorage gespeichert, sodass
-        MSE-Werte und Plots nach dem Reload stets konsistent zu den gespeicherten Modellen passen.
-        Testdaten fließen nicht ins Training ein.</p>
-
+    <p>Für die Implementierung wurden TensorFlow.js (Version 4.17) und Chart.js (Version 4.4) verwendet. TensorFlow.js
+        übernimmt den Aufbau und das Training der neuronalen Netze direkt im Browser sowie die Speicherung
+        der Modelle über IndexedDB (wird im browser gespeichert).
+        Chart.js wird zur Visualisierung der Datenpunkte, Vorhersagekurven und Trainingsverläufe eingesetzt.
+        <br><br>
+        Die Netzwerkarchitektur besteht aus zwei Hidden Layers mit jeweils 100 Neuronen und ReLU-Aktivierung. Die
+        Ausgabeschicht verwendet eine lineare Aktivierungsfunktion. Trainiert wird mit dem Adam-Optimizer (Lernrate
+        0,01, Batch-Größe 32). Die Anzahl der Epochen beträgt 500 für das Clean-Modell, 300 für das Best-Fit-Modell und
+        5000 für das Overfit-Modell. Zur Simulation von Messfehlern wird gaußsches Rauschen mit einer Varianz von
+        0,05 mittels Box-Muller-Transformation erzeugt.
+        <br><br>
+        Die Eingabedaten werden im Bereich [-2, 2] mit Math.random() generiert. Modelle werden nach dem
+        Training in der IndexedDB gespeichert und beim erneuten Laden automatisch wiederverwendet. Der Datensatz wird
+        zusätzlich im localStorage abgelegt, sodass MSE-Werte und Visualisierungen auch nach einem neuladen konsistent
+        bleiben. Die Testdaten werden nicht für das Training verwendet.
+    </p>
     <script src="script.js"></script>
 
 </body>
