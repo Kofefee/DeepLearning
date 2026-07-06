@@ -107,44 +107,45 @@ $('btnBuild').onclick = () => {
 };
 */
 // Training
-$('btnTrain').onclick = async () => {
-  stopTrain = false;
-  lossHistory = []; accHistory = [];
-  $('btnStopTrain').disabled = false;
-  $('btnTrain').disabled = true;
-  console.log("This is training!");
+$(document).ready(function () {
+  $('btnTrain').onclick = async () => {
+    stopTrain = false;
+    lossHistory = []; accHistory = [];
+    $('btnStopTrain').disabled = false;
+    $('btnTrain').disabled = true;
+    console.log("This is training!");
 
-  const epochs = CONFIG.EPOCHS;
-  const batchSize = CONFIG.BATCH_SIZE;
+    const epochs = CONFIG.EPOCHS;
+    const batchSize = CONFIG.BATCH_SIZE;
 
-  console.log("Start Training!");
+    console.log("Start Training!");
 
-  await model.fit(xs, ys, {
-    epochs, batchSize, shuffle: true,
-    callbacks: {
-      onEpochEnd: (ep, logs) => {
-        const acc = logs.acc ?? logs.accuracy ?? 0;
-        lossHistory.push(logs.loss);
-        accHistory.push(acc);
-        updateChart();
-        if ((ep + 1) % 5 === 0 || ep === 0)
-          log(`Epoch ${ep + 1}/${epochs} — loss: ${logs.loss.toFixed(4)} | acc: ${acc.toFixed(3)}`);
-        if (stopTrain) model.stopTraining = true;
-      },
-      onTrainEnd: () => {
-        log('Training abgeschlossen.');
-        $('btnTrain').disabled = false;
-        $('btnStopTrain').disabled = true;
-        $('btnExport').disabled = false;
-        $('btnEval').disabled = false;
-        enablePredictButtons();
-        predict();
+    await model.fit(xs, ys, {
+      epochs, batchSize, shuffle: true,
+      callbacks: {
+        onEpochEnd: (ep, logs) => {
+          const acc = logs.acc ?? logs.accuracy ?? 0;
+          lossHistory.push(logs.loss);
+          accHistory.push(acc);
+          updateChart();
+          if ((ep + 1) % 5 === 0 || ep === 0)
+            log(`Epoch ${ep + 1}/${epochs} — loss: ${logs.loss.toFixed(4)} | acc: ${acc.toFixed(3)}`);
+          if (stopTrain) model.stopTraining = true;
+        },
+        onTrainEnd: () => {
+          log('Training abgeschlossen.');
+          $('btnTrain').disabled = false;
+          $('btnStopTrain').disabled = true;
+          $('btnExport').disabled = false;
+          $('btnEval').disabled = false;
+          enablePredictButtons();
+          predict();
+        }
       }
-    }
-  });
-};
-$('btnStopTrain').onclick = () => { stopTrain = true; };
-
+    });
+  };
+  $('btnStopTrain').onclick = () => { stopTrain = true; };
+});
 // Loss Chart
 function updateChart() {
   const epochs = lossHistory.map((_, i) => i + 1);
