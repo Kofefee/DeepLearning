@@ -35,7 +35,7 @@ async function hello() {
   console.log("Anzahl Samples:", xArr.length);
 
   var x = tf.tensor2d(xArr);
-  var y = tf.tensor1d(yArr, 'int32');
+  var y = tf.tensor1d(yArr, 'float32');
 
   var SEQ_LEN = 3;
   var EMBED_DIM = 64;
