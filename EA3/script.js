@@ -33,6 +33,32 @@ var model = tf.sequential({
 model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
 model.summary()
 
+console.log("Training finished!");
+console.log(model.summary);
+
+/*
+model.compile({
+  loss: 'categoricalCrossentropy',
+  optimizer: tf.train.adam(0.01)
+});
+*/
+let bestLoss = Infinity;
+
+await model.fit(x, y, {
+  epochs: 2,
+  batchSize: 16,
+  callbacks: {
+    onEpochEnd: async (epoch, logs) => {
+      console.log(`Epoch ${epoch}: loss = ${logs.loss}`);
+      if (logs.loss < bestLoss) {
+        bestLoss = logs.loss;
+        await model.save('indexeddb://next-words-model');
+        console.log(`Modell gespeichert (verbesserter loss: ${logs.loss})`);
+      }
+    }
+  }
+});
+
 /*
   // Export Modell + Vokabular
   if (!model) { log('Kein Modell vorhanden.'); return; }
