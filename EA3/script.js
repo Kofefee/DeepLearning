@@ -1,3 +1,90 @@
+async function hello() {
+  const vocabResp = await fetch('dataset-test.txt');
+  let text = await vocabResp.text();
+  console.log("Start Training!");
+
+  text = text
+    .replace(/\n/g, ' ')
+    .replace(/\r/g, ' ')
+    .replace(/\ufeff/g, '')
+    .replace(/"/g, '');
+  text = text.split(/\s+/).filter(w => w.length > 0).join(' ');
+
+  const words = text.split(' ');
+  const wordCounts = {};
+  words.forEach(w => { wordCounts[w] = (wordCounts[w] || 0) + 1; });
+
+  const sortedWords = Object.keys(wordCounts).sort((a, b) => wordCounts[b] - wordCounts[a]);
+  const wordIndex = {};
+  sortedWords.forEach((w, i) => { wordIndex[w] = i + 1; });
+  localStorage.setItem('tokenizer', JSON.stringify(wordIndex));
+
+  const sequenceData = words.map(w => wordIndex[w]);
+  const vocabularySize = Object.keys(wordIndex).length + 1;
+
+  const sequence = [];
+  for (let i = 3; i < sequenceData.length; i++) {
+    sequence.push(sequenceData.slice(i - 3, i + 1));
+  }
+
+  const xArr = sequence.map(s => s.slice(0, 3));
+  const yArr = sequence.map(s => s[3]);
+
+  const x = tf.tensor2d(xArr); // Shape: [numSamples, 3]
+  const y = tf.oneHot(tf.tensor1d(yArr, 'int32'), vocabularySize); // Shape: [numSamples, vocabularySize]
+
+  // --- Config direkt hier definieren, statt globales CONFIG-Objekt zu erwarten ---
+  const SEQ_LEN = 3;
+  const EMBED_DIM = 64;
+  const LSTM_UNITS = 100;
+  const LEARNING_RATE = 0.01;
+  const BATCH_SIZE = 32;
+  const EPOCHS = 1;
+
+  const model = tf.sequential({
+    layers: [
+      tf.layers.embedding({
+        inputDim: vocabularySize,
+        outputDim: EMBED_DIM,
+        inputLength: SEQ_LEN
+      }),
+      tf.layers.lstm({ units: LSTM_UNITS, returnSequences: true }),
+      tf.layers.lstm({ units: LSTM_UNITS }),
+      tf.layers.dense({ units: vocabularySize, activation: 'softmax' })
+    ]
+  });
+
+  model.compile({
+    optimizer: tf.train.adam(LEARNING_RATE),
+    loss: 'categoricalCrossentropy',
+    metrics: ['accuracy']
+  });
+
+  model.summary();
+
+  let bestLoss = Infinity;
+  await model.fit(x, y, {
+    epochs: EPOCHS,
+    batchSize: BATCH_SIZE,
+    callbacks: {
+      onEpochEnd: async (epoch, logs) => {
+        console.log(`Epoch ${epoch}: loss = ${logs.loss}`);
+        if (logs.loss < bestLoss) {
+          bestLoss = logs.loss;
+          await model.save('indexeddb://next-words-model');
+          console.log(`Modell gespeichert (loss: ${logs.loss})`);
+        }
+      }
+    }
+  });
+
+  console.log("Training finished!");
+  const loadedModel = await tf.loadLayersModel('indexeddb://next-words-model');
+}
+
+hello();
+
+
 /*
 const CONFIG = {
   SEQ_LEN: 5,          // Länge der Eingabesequenz (Kontextfenster)
@@ -8,6 +95,7 @@ const CONFIG = {
   EPOCHS: 1           // zum Ausprobieren, Loss beobachten
 };
 */
+/*
 async function hello() {
   //onst { x, y, vocabularySize } = await hello();
   var vocabResp = await fetch('dataset-test.txt');
@@ -163,6 +251,6 @@ async function hello() {
     a.click();
   }
   */
-
+/*
   hello();
-}
+} */
