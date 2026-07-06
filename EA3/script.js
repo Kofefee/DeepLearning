@@ -27,11 +27,14 @@ async function hello() {
     sequence.push(sequenceData.slice(i - 3, i + 1));
   }
 
+  console.log("Vocab size:", vocabularySize);
+  console.log("Anzahl Samples:", xArr.length);
+
   var xArr = sequence.map(s => s.slice(0, 3));
   var yArr = sequence.map(s => s[3]);
 
   var x = tf.tensor2d(xArr);
-  var y = tf.oneHot(tf.tensor1d(yArr, 'int32'), vocabularySize);
+  var y = tf.tensor1d(yArr, 'int32');
 
   var SEQ_LEN = 3;
   var EMBED_DIM = 64;
@@ -55,7 +58,7 @@ async function hello() {
 
   model.compile({
     optimizer: tf.train.adam(LEARNING_RATE),
-    loss: 'categoricalCrossentropy',
+    loss: 'sparseCategoricalCrossentropy',
     metrics: ['accuracy']
   });
 
