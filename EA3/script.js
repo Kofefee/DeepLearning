@@ -91,6 +91,27 @@ async function hello() {
   console.log('Modell heruntergeladen!');
 */
 }
+let model = null;
+let wordIndex = null;
+let indexWord = null;
+
+async function loadModel() {
+  try {
+    model = await tf.loadLayersModel('next-words-model.json');
+    console.log("Modell geladen!");
+
+    wordIndex = JSON.parse(localStorage.getItem('tokenizer'));
+
+    indexWord = {};
+    Object.keys(wordIndex).forEach(word => {
+      indexWord[wordIndex[word]] = word;
+    });
+    console.log("Tokenizer geladen!");
+
+  } catch (e) {
+    console.log("Fehler beim Laden des Modells: ", e);
+  }
+}
 
 
 window.model = await tf.loadLayersModel('next-words-model.json');
@@ -102,6 +123,10 @@ const indexWord = {};
 Object.keys(wordIndex).forEach(word => {
   indexWord[wordIndex[word]] = word;
 });
+
+
+// Direkt beim Start der Seite laden
+loadModel();
 
 function predictNextWord(model, wordIndex, indexWord, textArray) {
 
@@ -119,6 +144,51 @@ function predictNextWord(model, wordIndex, indexWord, textArray) {
   return predictedWord;
 }
 
+function predictNextWord(textArray) {
+  if (!model || !wordIndex) {
+    console.log("Modell oder Tokenizer noch nicht geladen!");
+    return null;
+  }
 
+  const sequence = textArray.map(w => wordIndex[w] || 0);
+  const inputTensor = tf.tensor2d([sequence]);
+
+  const prediction = model.predict(inputTensor);
+  const predictedIndex = prediction.argMax(-1).dataSync()[0];
+
+  inputTensor.dispose();
+  prediction.dispose();
+
+  const predictedWord = indexWord[predictedIndex];
+  console.log(predictedWord);
+  return predictedWord;
+}
+
+
+document.getElementById('predictBtn').addEventListener('click', () => {
+  const text = document.getElementById('userInput').value;
+
+  if (text === "0") {
+    console.log("Execution completed....");
+    return;
+  }
+
+  try {
+    const words = text.split(" ").filter(w => w.length > 0);
+    const lastThree = words.slice(-3);
+    console.log(lastThree);
+
+    if (lastThree.length < 3) {
+      console.log("Bitte mindestens 3 Wörter eingeben.");
+      return;
+    }
+
+    const predicted = predictNextWord(lastThree);
+    document.getElementById('result').innerText = "Vorhersage: " + predicted;
+
+  } catch (e) {
+    console.log("Error occured: ", e);
+  }
+});
 
 //hello();
