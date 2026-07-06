@@ -7,43 +7,33 @@ const CONFIG = {
   EPOCHS: 1           // zum Ausprobieren, Loss beobachten
 };
 
-let vocab = {}, vocabInv = {}, vocabSize = 0;
-let xs = null, ys = null;
-let model = null;
-let stopTrain = false, stopAuto = false;
-let lossHistory = [], accHistory = [];
-
-
 async function hello() {
   const vocabResp = await fetch('dataset-test.txt');
-
-
-
-  // Training
-  stopTrain = false;
-  lossHistory = []; accHistory = [];
-  console.log("This is training!");
-
-  const epochs = CONFIG.EPOCHS;
-  const batchSize = CONFIG.BATCH_SIZE;
-
   console.log("Start Training!");
 
-  await model.fit(xs, ys, {
-    epochs, batchSize, shuffle: true,
-    callbacks: {
-      onEpochEnd: (ep, logs) => {
-        const acc = logs.acc ?? logs.accuracy ?? 0;
-        lossHistory.push(logs.loss);
-        accHistory.push(acc);
-        updateChart();
-        if ((ep + 1) % 5 === 0 || ep === 0)
-          log(`Epoch ${ep + 1}/${epochs} — loss: ${logs.loss.toFixed(4)} | acc: ${acc.toFixed(3)}`);
-        if (stopTrain) model.stopTraining = true;
-      },
-    }
+var model = tf.sequential({
+    layers: [
+      tf.layers.lstm({
+        units: 50,
+        activation: 'relu',
+        returnSequences: true,
+        inputShape: [10, 5]
+      }),
+      tf.layers.lstm({
+        units: 30,
+        activation: 'relu'
+      }),
+      tf.layers.dense({
+        units: 1,
+        activation: 'softmax'
+      })
+    ]
   });
 
+model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+model.summary()
+
+/*
   // Export Modell + Vokabular
   if (!model) { log('Kein Modell vorhanden.'); return; }
 
@@ -58,5 +48,6 @@ async function hello() {
   a.download = 'vocab.json';
   a.click();
 }
-
+*/
+};
 hello();
