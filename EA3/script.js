@@ -51,7 +51,7 @@ async function hello() {
 
   var x = tf.tensor2d(xArr);
   var y = tf.oneHot(tf.tensor1d(yArr, 'int32'), vocabularySize);
-  return { x, y, vocabularySize, wordIndex };
+  //return { x, y, vocabularySize, wordIndex };
 
   var model = tf.sequential({
     layers: [
