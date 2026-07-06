@@ -15,12 +15,14 @@ async function hello() {
   words.forEach(w => { wordCounts[w] = (wordCounts[w] || 0) + 1; });
 
   var sortedWords = Object.keys(wordCounts).sort((a, b) => wordCounts[b] - wordCounts[a]);
-  var wordIndex = {};
-  sortedWords.forEach((w, i) => { wordIndex[w] = i + 1; });
+  var wordIndexLocal = {};
+  sortedWords.forEach((w, i) => { wordIndexLocal[w] = i + 1; });
   localStorage.setItem('tokenizer', JSON.stringify(wordIndex));
 
-  var sequenceData = words.map(w => wordIndex[w]);
-  var vocabularySize = Object.keys(wordIndex).length + 1;
+  downloadTokenizer(wordIndexLocal);
+
+  var sequenceData = words.map(w => wordIndexLocal[w]);
+  var vocabularySize = Object.keys(wordIndexLocal).length + 1;
 
   var sequence = [];
   for (let i = 3; i < sequenceData.length; i++) {
@@ -92,24 +94,27 @@ async function hello() {
 */
 }
 let model = null;
-let wordIndex = null;
+//let wordIndex = null;
 let indexWord = null;
 
 async function loadModel() {
   try {
+    // Modell laden
     model = await tf.loadLayersModel('next-words-model.json');
     console.log("Modell geladen!");
 
-    wordIndex = JSON.parse(localStorage.getItem('tokenizer'));
+    const tokenizerResp = await fetch('tokenizer.json');
+    wordIndex = await tokenizerResp.json();
+    console.log("Tokenizer geladen!");
 
+    // Invertierten Index bauen
     indexWord = {};
     Object.keys(wordIndex).forEach(word => {
       indexWord[wordIndex[word]] = word;
     });
-    console.log("Tokenizer geladen!");
 
   } catch (e) {
-    console.log("Fehler beim Laden des Modells: ", e);
+    console.log("Fehler beim Laden von Modell/Tokenizer: ", e);
   }
 }
 
@@ -186,5 +191,15 @@ document.getElementById('predictBtn').addEventListener('click', () => {
     console.log("Error occured: ", e);
   }
 });
+
+function downloadTokenizer(tokenizerObj) {
+  const blob = new Blob([JSON.stringify(tokenizerObj)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'tokenizer.json';
+  a.click();
+  URL.revokeObjectURL(url);
+}
 
 //hello();
