@@ -1,3 +1,4 @@
+/*
 const CONFIG = {
   SEQ_LEN: 5,          // Länge der Eingabesequenz (Kontextfenster)
   EMBED_DIM: 64,       // Dimension der Embedding-Schicht
@@ -6,18 +7,51 @@ const CONFIG = {
   BATCH_SIZE: 32,      // Vorgabe: 32
   EPOCHS: 1           // zum Ausprobieren, Loss beobachten
 };
-
+*/
 async function hello() {
+  const { x, y, vocabularySize } = await hello();
   const vocabResp = await fetch('dataset-test.txt');
   const text = await vocabResp.text();
   console.log("Start Training!");
 
+  text = text
+    .replace(/\n/g, ' ')
+    .replace(/\r/g, ' ')
+    .replace(/\ufeff/g, '')
+    .replace(/"/g, '');
 
-  tokenizer = tf_text.WhitespaceTokenizer()
-  tokens = tokenizer.tokenize(vocabResp.text())
-  print(tokens.to_list())
-  console.log("Tokenisierung abgeschlossen!")
+  text = text.split(/\s+/).filter(w => w.length > 0).join(' ');
 
+  const words = text.split(' ');
+  const wordCounts = {};
+  words.forEach(w => {
+    wordCounts[w] = (wordCounts[w] || 0) + 1;
+  });
+
+  const sortedWords = Object.keys(wordCounts).sort(
+    (a, b) => wordCounts[b] - wordCounts[a]
+  );
+
+  const wordIndex = {};
+  sortedWords.forEach((w, i) => {
+    wordIndex[w] = i + 1;
+  });
+
+  localStorage.setItem('tokenizer', JSON.stringify(wordIndex));
+
+  const sequenceData = words.map(w => wordIndex[w]);
+  const vocabularySize = Object.keys(wordIndex).length + 1;
+
+  const sequence = [];
+  for (let i = 3; i < sequenceData.length; i++) {
+    sequence.push(sequenceData.slice(i - 3, i + 1));
+  }
+  const xArr = sequence.map(s => s.slice(0, 3));
+  const yArr = sequence.map(s => s[3]);
+
+  const x = tf.tensor2d(xArr);
+  const y = tf.oneHot(tf.tensor1d(yArr, 'int32'), vocabularySize);
+  return { x, y, vocabularySize, wordIndex };
 
   const model = tf.sequential({
     layers: [
@@ -58,6 +92,8 @@ async function hello() {
 
   console.log("Training finished!");
   const loadedModel = await tf.loadLayersModel('indexeddb://next-words-model');
+
+
 
   /*
   async function hello() {
