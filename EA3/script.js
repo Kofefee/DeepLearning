@@ -49,7 +49,7 @@ await model.fit(x, y, {
   batchSize: 16,
   callbacks: {
     onEpochEnd: async (epoch, logs) => {
-      console.log(`Epoch ${epoch}: loss = ${logs.loss}`);
+      //console.log(`Epoch ${epoch}: loss = ${logs.loss}`);
       if (logs.loss < bestLoss) {
         bestLoss = logs.loss;
         await model.save('indexeddb://next-words-model');
@@ -58,6 +58,11 @@ await model.fit(x, y, {
     }
   }
 });
+console.log("Checkpoint erreicht!");
+
+
+ const model = await tf.loadLayersModel('indexeddb://next-words-model');
+
 
 /*
   // Export Modell + Vokabular
