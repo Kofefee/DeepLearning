@@ -28,10 +28,11 @@ async function hello() {
   }
 
   console.log("Vocab size:", vocabularySize);
-  console.log("Anzahl Samples:", xArr.length);
 
   var xArr = sequence.map(s => s.slice(0, 3));
   var yArr = sequence.map(s => s[3]);
+
+  console.log("Anzahl Samples:", xArr.length);
 
   var x = tf.tensor2d(xArr);
   var y = tf.tensor1d(yArr, 'int32');
