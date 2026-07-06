@@ -9,9 +9,9 @@ const CONFIG = {
 };
 */
 async function hello() {
-  const { x, y, vocabularySize } = await hello();
-  const vocabResp = await fetch('dataset-test.txt');
-  const text = await vocabResp.text();
+  //onst { x, y, vocabularySize } = await hello();
+  var vocabResp = await fetch('dataset-test.txt');
+  var text = await vocabResp.text();
   console.log("Start Training!");
 
   text = text
@@ -22,38 +22,38 @@ async function hello() {
 
   text = text.split(/\s+/).filter(w => w.length > 0).join(' ');
 
-  const words = text.split(' ');
-  const wordCounts = {};
+  var words = text.split(' ');
+  var wordCounts = {};
   words.forEach(w => {
     wordCounts[w] = (wordCounts[w] || 0) + 1;
   });
 
-  const sortedWords = Object.keys(wordCounts).sort(
+  var sortedWords = Object.keys(wordCounts).sort(
     (a, b) => wordCounts[b] - wordCounts[a]
   );
 
-  const wordIndex = {};
+  var wordIndex = {};
   sortedWords.forEach((w, i) => {
     wordIndex[w] = i + 1;
   });
 
   localStorage.setItem('tokenizer', JSON.stringify(wordIndex));
 
-  const sequenceData = words.map(w => wordIndex[w]);
-  const vocabularySize = Object.keys(wordIndex).length + 1;
+  var sequenceData = words.map(w => wordIndex[w]);
+  var vocabularySize = Object.keys(wordIndex).length + 1;
 
-  const sequence = [];
+  var sequence = [];
   for (let i = 3; i < sequenceData.length; i++) {
     sequence.push(sequenceData.slice(i - 3, i + 1));
   }
-  const xArr = sequence.map(s => s.slice(0, 3));
-  const yArr = sequence.map(s => s[3]);
+  var xArr = sequence.map(s => s.slice(0, 3));
+  var yArr = sequence.map(s => s[3]);
 
-  const x = tf.tensor2d(xArr);
-  const y = tf.oneHot(tf.tensor1d(yArr, 'int32'), vocabularySize);
+  var x = tf.tensor2d(xArr);
+  var y = tf.oneHot(tf.tensor1d(yArr, 'int32'), vocabularySize);
   return { x, y, vocabularySize, wordIndex };
 
-  const model = tf.sequential({
+  var model = tf.sequential({
     layers: [
       tf.layers.lstm({
         units: 50,
@@ -91,7 +91,7 @@ async function hello() {
   });
 
   console.log("Training finished!");
-  const loadedModel = await tf.loadLayersModel('indexeddb://next-words-model');
+  var loadedModel = await tf.loadLayersModel('indexeddb://next-words-model');
 
 
 
