@@ -146,6 +146,8 @@ $(document).ready(function () {
   };
   $('btnStopTrain').onclick = () => { stopTrain = true; };
 });
+
+
 // Loss Chart
 function updateChart() {
   const epochs = lossHistory.map((_, i) => i + 1);
