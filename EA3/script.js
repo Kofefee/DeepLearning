@@ -52,7 +52,7 @@ function enablePredictButtons() {
   $('btnAuto').disabled = false;
   $('btnReset').disabled = false;
 }
-
+/*
 // Tokenisierung
 $('btnProcess').onclick = () => {
   const words = tokenize($('corpus').value);
@@ -76,7 +76,7 @@ $('btnProcess').onclick = () => {
   log(`Vokabular: ${vocabSize - 1} Wörter | Sequenzen: ${seqs.length}`);
   $('btnBuild').disabled = false;
 };
-
+*/
 // Modell (Stacked LSTM)
 $('btnBuild').onclick = () => {
   if (model) model.dispose();
@@ -115,6 +115,8 @@ $('btnTrain').onclick = async () => {
 
   const epochs = CONFIG.EPOCHS;
   const batchSize = CONFIG.BATCH_SIZE;
+
+  console.log("Start Training!");
 
   await model.fit(xs, ys, {
     epochs, batchSize, shuffle: true,
