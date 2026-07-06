@@ -78,6 +78,7 @@ $('btnProcess').onclick = () => {
 };
 */
 // Modell (Stacked LSTM)
+/*
 $('btnBuild').onclick = () => {
   if (model) model.dispose();
   const seqLen = CONFIG.SEQ_LEN;
@@ -104,7 +105,7 @@ $('btnBuild').onclick = () => {
   log(`Optimizer: Adam (lr=${lr}) | Batch-Size: ${CONFIG.BATCH_SIZE} | Epochs: ${CONFIG.EPOCHS}`);
   $('btnTrain').disabled = false;
 };
-
+*/
 // Training
 $('btnTrain').onclick = async () => {
   stopTrain = false;
