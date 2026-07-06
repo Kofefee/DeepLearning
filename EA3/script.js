@@ -83,6 +83,14 @@ async function hello() {
 
   console.log("Training finished!");
   var loadedModel = await tf.loadLayersModel('indexeddb://next-words-model');
+
+  await model.save('downloads://next-words-model');
+
+  // Variante 2: Nachträglich aus IndexedDB laden und dann herunterladen
+  const loadedModel = await tf.loadLayersModel('indexeddb://next-words-model');
+  await loadedModel.save('downloads://next-words-model');
+  console.log('Modell heruntergeladen!');
+
 }
 
 hello();
