@@ -113,10 +113,6 @@ async function loadModel() {
   }
 }
 
-
-window.model = await tf.loadLayersModel('next-words-model.json');
-console.log("Modell geladen!");
-
 var wordIndex = JSON.parse(localStorage.getItem('tokenizer'));
 
 const indexWord = {};
