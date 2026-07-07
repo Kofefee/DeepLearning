@@ -105,8 +105,8 @@ function downloadTokenizer(tokenizerObj) {
   a.click();
   URL.revokeObjectURL(url);
 }
-
-
+// Bis loadModel wieder reinkommentieren
+/*
 async function loadModel() {
   try {
     // Modell laden
@@ -130,6 +130,8 @@ async function loadModel() {
 
 // Direkt beim Start der Seite laden
 loadModel();
+*/
+
 
 /*
 var wordIndex = JSON.parse(localStorage.getItem('tokenizer'));
