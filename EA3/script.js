@@ -106,7 +106,7 @@ function downloadTokenizer(tokenizerObj) {
   URL.revokeObjectURL(url);
 }
 // Bis loadModel wieder reinkommentieren
-/*
+
 async function loadModel() {
   try {
     // Modell laden
@@ -130,7 +130,7 @@ async function loadModel() {
 
 // Direkt beim Start der Seite laden
 loadModel();
-*/
+
 
 
 /*
@@ -178,7 +178,7 @@ function predictNextWord(textArray) {
   return predictedWord;
 }
 
-/*
+
 document.getElementById('predictBtn').addEventListener('click', () => {
   const text = document.getElementById('userInput').value;
 
@@ -204,5 +204,5 @@ document.getElementById('predictBtn').addEventListener('click', () => {
     console.log("Error occured: ", e);
   }
 });
-*/
+
 hello();
