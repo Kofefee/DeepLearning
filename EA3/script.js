@@ -178,31 +178,157 @@ function predictNextWord(textArray) {
   return predictedWord;
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('predictBtn').addEventListener('click', () => {
-    const text = document.getElementById('userInput').value;
+// ===== ZUSTAND =====
+let stopRequested = false;
+let autoRunning = false;
 
-    if (text === "0") {
-      console.log("Execution completed....");
-      return;
+// ===== HILFSFUNKTIONEN =====
+function getWords() {
+  const text = document.getElementById('userInput').value;
+  return text.split(' ').filter(w => w.length > 0);
+}
+
+function getLastThreeWords() {
+  return getWords().slice(-3);
+}
+
+function appendWord(word) {
+  const textarea = document.getElementById('userInput');
+  const words = getWords();
+  words.push(word);
+  textarea.value = words.join(' ') + ' ';
+}
+
+function setStatus(msg) {
+  document.getElementById('status').innerText = msg;
+}
+
+function clearPredictions() {
+  document.getElementById('predictions').innerHTML = '';
+}
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+// ===== TOP-K VORHERSAGE MIT WAHRSCHEINLICHKEITEN =====
+function predictTopK(textArray, k = 5) {
+  if (!model || !wordIndex) {
+    setStatus("Modell oder Tokenizer noch nicht geladen!");
+    return null;
+  }
+
+  return tf.tidy(() => {
+    const sequence = textArray.map(w => wordIndex[w] || 0);
+    const inputTensor = tf.tensor2d([sequence]);
+
+    const prediction = model.predict(inputTensor); // bereits Softmax, Shape [1, vocabSize]
+    const { values, indices } = tf.topk(prediction, k);
+
+    const probs = values.dataSync();
+    const idxs = indices.dataSync();
+
+    const results = [];
+    for (let i = 0; i < k; i++) {
+      results.push({
+        word: indexWord[idxs[i]] || '(unbekannt)',
+        prob: probs[i]
+      });
     }
-
-    try {
-      const words = text.split(" ").filter(w => w.length > 0);
-      const lastThree = words.slice(-3);
-      console.log(lastThree);
-
-      if (lastThree.length < 3) {
-        console.log("Bitte mindestens 3 Wörter eingeben.");
-        return;
-      }
-
-      const predicted = predictNextWord(lastThree);
-      document.getElementById('result').innerText = "Vorhersage: " + predicted;
-
-    } catch (e) {
-      console.log("Error occured: ", e);
-    }
+    return results;
   });
+}
+
+// ===== VORHERSAGE BERECHNEN (ohne anzuhängen) =====
+function computePredictions() {
+  const lastThree = getLastThreeWords();
+  if (lastThree.length < 3) {
+    setStatus("Bitte mindestens 3 vollständige Wörter eingeben.");
+    clearPredictions();
+    return null;
+  }
+  setStatus("");
+  return predictTopK(lastThree, 5);
+}
+
+// ===== VORHERSAGEN ALS KLICKBARE BUTTONS ANZEIGEN =====
+function showPredictions(predictions) {
+  clearPredictions();
+  const container = document.getElementById('predictions');
+
+  predictions.forEach(p => {
+    const btn = document.createElement('button');
+    btn.textContent = `${p.word} (${(p.prob * 100).toFixed(1)}%)`;
+    btn.addEventListener('click', () => {
+      appendWord(p.word);
+      doVorhersage(); // I1: nach Auswahl automatisch neue Vorhersage
+    });
+    container.appendChild(btn);
+  });
+}
+
+// ===== I1: "Vorhersage"-Button =====
+function doVorhersage() {
+  const predictions = computePredictions();
+  if (!predictions) return;
+  showPredictions(predictions);
+}
+
+document.getElementById('vorhersageBtn').addEventListener('click', doVorhersage);
+
+// ===== I2: "Weiter"-Button =====
+function doWeiter() {
+  const predictions = computePredictions();
+  if (!predictions) return;
+
+  const best = predictions[0]; // wahrscheinlichstes Wort
+  appendWord(best.word);
+  doVorhersage(); // neue Vorhersage automatisch anzeigen
+}
+
+document.getElementById('weiterBtn').addEventListener('click', doWeiter);
+
+// ===== I3: "Auto"-Button (bis zu 10 Wörter, unterbrechbar) =====
+async function doAuto() {
+  autoRunning = true;
+  stopRequested = false;
+  document.getElementById('autoBtn').disabled = true;
+  document.getElementById('stoppBtn').disabled = false;
+
+  for (let i = 0; i < 10; i++) {
+    if (stopRequested) break;
+
+    const predictions = computePredictions();
+    if (!predictions) break;
+
+    const best = predictions[0];
+    appendWord(best.word);
+    showPredictions(predictions);
+
+    await sleep(400); // kleine Pause, damit man den Fortschritt sieht
+  }
+
+  autoRunning = false;
+  document.getElementById('autoBtn').disabled = false;
+  document.getElementById('stoppBtn').disabled = true;
+
+  // Am Ende die aktuell gültige Vorhersage anzeigen
+  doVorhersage();
+}
+
+document.getElementById('autoBtn').addEventListener('click', doAuto);
+
+// ===== "Stopp"-Button =====
+document.getElementById('stoppBtn').addEventListener('click', () => {
+  stopRequested = true;
 });
+
+// ===== I4: "Reset"-Button =====
+document.getElementById('resetBtn').addEventListener('click', () => {
+  stopRequested = true; // falls Auto gerade läuft, stoppen
+  document.getElementById('userInput').value = '';
+  clearPredictions();
+  setStatus('');
+});
+
 //hello();

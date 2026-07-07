@@ -18,8 +18,23 @@
 
 
   <input type="text" id="userInput" placeholder="Gib mindestens 3 Wörter ein...">
+
+  <!--
   <button id="predictBtn">Nächstes Wort vorhersagen</button>
-  <p id="result"></p>
+  <p id="result"></p> -->
+
+
+  <div style="margin-top:10px;">
+  <button id="vorhersageBtn">Vorhersage</button>
+  <button id="weiterBtn">Weiter</button>
+  <button id="autoBtn">Auto</button>
+  <button id="stoppBtn" disabled>Stopp</button>
+  <button id="resetBtn">Reset</button>
+</div>
+
+<div id="status" style="margin-top:10px; color:#a00;"></div>
+
+<div id="predictions" style="margin-top:10px; display:flex; gap:8px; flex-wrap:wrap;"></div>
 
   <!-- 2. Parameter & Modell
   <section>
