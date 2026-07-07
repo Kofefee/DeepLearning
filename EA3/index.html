@@ -57,12 +57,17 @@
       Klassifikationsprobleme mit Softmax-Output.
     </p>
     <p>
-      Ich habe leider wenige Experimente mit anderen Architekturen/Parametern durchgeführt, 
-      da das Training im Browser sehr lange dauert. Ich habe zuerst mit einem kleinerem Datensatz trainiert, 
-      um die Loss-Kurve zu beobachten und die Lernrate zu testen. Allerdings hat auch dieser Datensatz schon mehrere 
-      Minuten pro Epoche benötigt, sodass ich nicht viele Variationen ausprobieren konnte.
-      Die Lernrate auf 0.01 belassen, da sie sich als stabil erwiesen hat. Epochs habe ich dadurch auch niedrig gelassen.
-      Hier war das Problem mein Laptop bzw. meine Hardware, die nicht genug Leistung hatte, um das Modell schneller zu trainieren.
+      Ich habe leider wenige Experimente mit anderen Architekturen/Parametern durchgeführt,
+      da das Training im Browser sehr lange dauert. Ich habe zuerst mit einem kleinerem Datensatz trainiert,
+      um die Loss-Kurve zu beobachten und die Lernrate zu testen. Allerdings hat auch dieser Datensatz schon mehrere
+      Minuten pro Epoche benötigt (habe 5 Epochs gemacht), sodass ich nicht viele Variationen ausprobieren konnte. Habe
+      dann den
+      verwendeten Datensatz auf 5000 relevante Wörter reduziert, um die Trainingszeit zu verkürzen. Dies hat aber aucb
+      sehr lange gedauert.
+      Die Lernrate habe ich auf 0.01 belassen, da sie sich als stabil erwiesen hat. Epochs habe ich dadurch auch niedrig
+      gelassen.
+      Hier war das Problem mein Laptop bzw. meine Hardware, die nicht genug Leistung hatte, um das Modell schneller zu
+      trainieren.
     </p>
 
 
@@ -72,9 +77,12 @@
       <div id="lossChart" style="width:100%; max-width:700px; height:400px;"></div>
     </section>
 
+    <img src="loss_curve.png" alt="Loss-Kurve" style="max-width:100%; height:auto; margin-top:10px;">
+
     <h3>Vorhersagegüte (Top-k Accuracy) und Perplexity</h3>
     <p>
-      Gemessen auf [TODO: welcher Datensatz / wie viele Zeichen / Trainings- oder Testdaten?]:
+      Gemessen auf einer zufälligen Stichprobe von 2000 Sequenzen aus den Trainingsdaten
+      (Vokabular auf die 5000 häufigsten Wörter reduziert, Training über 5 Epochen):
     </p>
     <table id="resultsTable" border="1" cellpadding="6" style="border-collapse:collapse;">
       <thead>
@@ -87,41 +95,56 @@
       <tbody>
         <tr>
           <td>1</td>
-          <td id="acc1">[TODO]</td>
+          <td id="acc1">29,1%</td>
           <td>Genau richtig vorhergesagt</td>
         </tr>
         <tr>
           <td>5</td>
-          <td id="acc5">[TODO]</td>
+          <td id="acc5">40,9%</td>
           <td>Korrektes Wort unter den 5 wahrscheinlichsten</td>
         </tr>
         <tr>
           <td>10</td>
-          <td id="acc10">[TODO]</td>
+          <td id="acc10">45,6%</td>
           <td>Korrektes Wort unter den 10 wahrscheinlichsten</td>
         </tr>
         <tr>
           <td>20</td>
-          <td id="acc20">[TODO]</td>
+          <td id="acc20">50,5%</td>
           <td>Korrektes Wort unter den 20 wahrscheinlichsten</td>
         </tr>
         <tr>
           <td>100</td>
-          <td id="acc100">[TODO]</td>
-          <td>Korrectes Wort unter den 100 wahrscheinlichsten</td>
+          <td id="acc100">56,8%</td>
+          <td>Korrektes Wort unter den 100 wahrscheinlichsten</td>
         </tr>
       </tbody>
     </table>
+
     <p id="perplexityText">
-      Perplexity:[TODO: Wert eintragen, z. B. "Die Perplexity auf den
-      Trainingsdaten betrug X, berechnet als exp(durchschnittlicher Cross-Entropy-Loss)."]
+      Perplexity: 2154,6 (berechnet als Mittelwert) über die Stichprobe,
+      anschließend exponenziert. Bei zufälligem Raten läge die Perplexity bei
+      einem Vokabular von 5000 Wörtern bei ca. 5000, ein perfektes Modell läge nahe 1. Der
+      gemessene Wert zeigt, dass das Modell bereits deutlich mehr als zufälliges Raten leistet,
+      aber noch am sehr Anfang des Lernprozesses steht.
+    </p>
+    <p>
+      Der Trainingsverlauf über die 5 Epochen zeigte einen klar sinkenden, sich abflachenden
+      Loss (5,62 → 5,52 → 5,49 → 5,48 → 5,47), was auf ein grundsätzlich funktionierendes
+      Lernverhalten hindeutet. Die Top-1-Accuracy von 29,1% liegt über dem Zufallsniveau, was zeigt, dass das Modell
+      vor allem häufige Wörter bereits gut vorhersagt. Die
+      vergleichsweise niedrige Top-100-Accuracy (56,8%) und die hohe Perplexity deuten jedoch
+      darauf hin, dass mit mehr Trainingsepochen noch deutliches Verbesserungspotenzial
+      bestanden hätte – die geringe Epochenzahl war hier durch die begrenzte Hardware-Leistung
+      meines Laptops limitiert
     </p>
 
     <h3>Rekonstruktion der Trainingsdaten und Datenschutz</h3>
     <p>
-      Ich habe ein paar anfangende Worte in das Feld geschrieben und den "Auto"-Modus gestartet. 
-      Das Modell hat dann die nächsten Wörter vorhergesagt und ich konnte sehen, dass es einige Passagen aus dem Trainingskorpus fast wörtlich wiedergegeben hat. 
-      Dies deutet darauf hin, dass das Modell die Trainingsdaten teilweise memoriert hat. 
+      Ich habe ein paar anfangende Worte in das Feld geschrieben und den "Auto"-Modus gestartet.
+      Das Modell hat dann die nächsten Wörter vorhergesagt und ich konnte sehen, dass es einige Passagen aus dem
+      Trainingskorpus fast wörtlich wiedergegeben hat.
+      Dies deutet darauf hin, dass das Modell die Trainingsdaten teilweise memoriert hat.
       Das lag aber auch hauptsächlich an einem kleinen Datensatz und einer geringen Anzahl an Trainings-Epochen.
     </p>
     <p>
@@ -139,11 +162,18 @@
   <section class="doc-section">
     <p>
       Das LSTM-Sprachmodell lernt auf kleinen, homogenen Textkorpora schnell häufige
-      Wortmuster, was zu einer vergleichsweise hohen Top-k-Accuracy führt. 
-      Beim kleinen Datensatz gab es immer mal wieder "Loops", in denen sich das Modell wiederholte. 
-      Also immer wieder das selbe Wort oder die selbe Phrase vorhersagte. Beim größeren Datensatz war das nicht so stark ausgeprägt, da es mehr Variationen gab.
-      Allerdings ergab sich hier das Problem, dass sehr seltsame Wortkombinationen vorhergesagt wurden. 
+      Wortmuster, was zu einer vergleichsweise hohen Top-k-Accuracy führt.
+      Beim kleinen Datensatz gab es immer mal wieder "Loops", in denen sich das Modell wiederholte.
+      Also immer wieder das selbe Wort oder die selbe Phrase vorhersagte. Beim größeren Datensatz war das nicht so stark
+      ausgeprägt, da es mehr Variationen gab.
+      Allerdings ergab sich hier das Problem, dass sehr seltsame Wortkombinationen vorhergesagt wurden.
       Diese hatten oftmals nicht mal einen Zusammenhang mit dem vorherigen Text.
+      Zusätzlich zeigte sich, dass ein großes Vokabular (ursprünglich über 40.000 Wörter) das
+      Training im Browser stark verlangsamte; erst die Reduktion auf die 5000 häufigsten
+      Wörter machte mehrere Trainingsläufe innerhalb praktikabler Zeit möglich. Dies ging
+      jedoch auf Kosten der Ausdrucksfähigkeit des Modells, da seltenere Wörter nicht mehr
+      vorhergesagt werden können. Insgesamt war die verfügbare Rechenleistung der limitierende
+      Faktor für Modellgröße, Vokabularumfang und Trainingsdauer.
     </p>
   </section>
 
@@ -170,24 +200,36 @@
       <li>Die Top-k-Wahrscheinlichkeiten werden effizient über tf.topk()
         direkt aus dem Softmax-Output extrahiert, statt den gesamten Vokabular-Vektor
         manuell zu durchsuchen.</li>
+      <li>Vokabularbeschränkung: Das Vokabular wurde auf die 5000 häufigsten Wörter
+        begrenzt (ursprünglich über 40.000 Wörter), um Trainingszeit und Modellgröße
+        im Browser praktikabel zu halten. Seltenere Wörter werden als "unbekannt"
+        (Index 0) behandelt.</li>
       <li>Speicherverwaltung: Tensor-Operationen bei der Vorhersage laufen in
         tf.tidy(), damit Zwischen-Tensoren automatisch freigegeben werden
         und kein Memory-Leak im Browser entsteht.</li>
+      <li>Evaluierung: Top-k-Accuracy (k=1,5,10,20,100) und Perplexity werden nach dem
+        Training automatisch auf einer zufälligen Stichprobe von 2000 Trainingssequenzen
+        berechnet (Funktion evaluateModel())</li>
     </ul>
+
+    <img src="topK.png" alt="TopK" style="max-width:100%; height:auto; margin-top:10px;">
 
     <p>Fachlich: Implementierung:</p>
     <ul>
       <li>Tokenisierung: Zeilenumbrüche und
         Anführungszeichen wurden entfernt, der Text wird auf Whitespace normalisiert und
         in Wörter zerlegt. Jedes eindeutige Wort erhält einen Integer-Index nach
-        Häufigkeit sortiert (häufigstes Wort = Index 1, 0 = reserviert/unbekannt).</li>
+        Häufigkeit sortiert (häufigstes Wort = Index 1, 0 = reserviert/unbekannt),
+        begrenzt auf die 5000 häufigsten Wörter.</li>
       <li>Sequenzbildung: Sliding-Window der festen Länge 3 über den
         Token-Stream. Jede Trainingssequenz besteht aus 3 Input-Token
         und 1 Ziel-Token.</li>
       <li>Architektur: Embedding(64) -> LSTM(100,
         returnSequences=true) -> LSTM(100) -> Dense(Vokabulargröße, Softmax).</li>
       <li>Loss: Sparse Categorical Cross-Entropy. Optimizer:
-        Adam (Lernrate 0.01). Batch-Size: 32. Epochen:</li>
+        Adam (Lernrate 0.01). Batch-Size: 32. Epochen: 5 (limitiert durch
+        verfügbare Hardware-Leistung; Loss-Kurve zeigte zum Ende der 5 Epochen noch
+        klar sinkende Tendenz)</li>
       <li>Vorhersage/Interaktion: Die letzten 3 Wörter des aktuellen
         Prompts werden als Input genutzt; unbekannte Wörter werden als 0 (Padding)
         behandelt. Über die Buttons "Vorhersage" (Top-5-Wörter mit Wahrscheinlichkeit

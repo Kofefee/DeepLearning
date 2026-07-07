@@ -163,7 +163,7 @@ async function loadModel() {
 }
 
 // Direkt beim Start der Seite laden
-//loadModel();
+loadModel();
 
 
 
@@ -469,4 +469,4 @@ function displayEvaluationResults(results) {
     `Perplexity: ${results.perplexity.toFixed(2)} (berechnet auf einer Stichprobe von ${results.sampleSize} Sequenzen)`;
 }
 
-hello();
+//hello();
