@@ -50,7 +50,7 @@ async function hello() {
   var LSTM_UNITS = 100;
   var LEARNING_RATE = 0.01;
   var BATCH_SIZE = 32;
-  var EPOCHS = 1;
+  var EPOCHS = 2;
 
   var trainedModel = tf.sequential({
     layers: [
