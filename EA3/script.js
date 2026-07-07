@@ -110,7 +110,7 @@ function downloadTokenizer(tokenizerObj) {
 async function loadModel() {
   try {
     // Modell laden
-    model = await tf.loadLayersModel('next-words-model.json');
+    model = await tf.loadLayersModel('./next-words-model.json');
     console.log("Modell geladen!");
 
     const tokenizerResp = await fetch('tokenizer.json');
