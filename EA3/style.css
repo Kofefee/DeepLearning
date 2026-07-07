@@ -35,6 +35,7 @@
 textarea {
   min-height: 80px;
   resize: none;
+  width: 100%;
 }
 
  textarea {
