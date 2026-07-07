@@ -17,23 +17,207 @@
   <!-- <div id="statusBanner">Suche vortrainiertes Modell…</div>-->
 
 
- <textarea id="userInput" rows="3" style="resize:none; overflow:hidden;" placeholder="Gib mindestens 3 Wörter ein..."></textarea>
+  <textarea id="userInput" rows="3" style="resize:none; overflow:hidden;"
+    placeholder="Gib mindestens 3 Wörter ein..."></textarea>
   <!--
   <button id="predictBtn">Nächstes Wort vorhersagen</button>
   <p id="result"></p> -->
 
 
   <div style="margin-top:10px;">
-  <button id="vorhersageBtn">Vorhersage</button>
-  <button id="weiterBtn">Weiter</button>
-  <button id="autoBtn">Auto</button>
-  <button id="stoppBtn" disabled>Stopp</button>
-  <button id="resetBtn">Reset</button>
-</div>
+    <button id="vorhersageBtn">Vorhersage</button>
+    <button id="weiterBtn">Weiter</button>
+    <button id="autoBtn">Auto</button>
+    <button id="stoppBtn" disabled>Stopp</button>
+    <button id="resetBtn">Reset</button>
+  </div>
 
-<div id="status" style="margin-top:10px; color:#a00;"></div>
+  <div id="status" style="margin-top:10px; color:#a00;"></div>
 
-<div id="predictions" style="margin-top:10px; display:flex; gap:8px; flex-wrap:wrap;"></div>
+  <div id="predictions" style="margin-top:10px; display:flex; gap:8px; flex-wrap:wrap;"></div>
+
+  <h2>Experimente und Resultate</h2>
+
+  <section class="doc-section">
+    <h3>Netzwerkarchitektur</h3>
+    <p>
+      Verwendet wird ein Stacked LSTM mit folgendem Aufbau:
+      Embedding (Dimension 64) → LSTM (100 Units, returnSequences=true) ->
+      LSTM (100 Units) -> Dense (Vokabulargröße, Softmax-Aktivierung).
+      Als Input dienen die letzten 3 Wörter (Sequenzlänge = 3), als Ziel das jeweils
+      darauffolgende Wort.
+    </p>
+    <p>
+      Begründung: Zwei gestapelte LSTM-Schichten erlauben es dem Netz,
+      zeitliche Muster auf zwei Abstraktionsebenen zu lernen, die erste Schicht erfasst
+      lokale Wortfolgen, die zweite abstrahiert darüber. 100 Units pro Schicht sind ein
+      Kompromiss zwischen Modellkapazität und Trainingsgeschwindigkeit im Browser.
+      Cross-Entropy (konkret "sparseCategoricalCrossentropy", da die Zielwerte
+      als Integer-Indizes statt One-Hot-Vektoren vorliegen) ist der Standard-Loss für
+      Klassifikationsprobleme mit Softmax-Output.
+    </p>
+    <p>
+      TODO: Hier meine Experimente ergänzen] z. B.:
+      Welche Architekturen/Parameter hast du zusätzlich ausprobiert (andere LSTM-Unit-Zahlen,
+      andere Embedding-Dimensionen, andere Sequenzlängen, GRU statt LSTM, mehr/weniger
+      Schichten)? Welchen Einfluss hatte das auf Trainingszeit und Loss? Welche Lernrate
+      (0.01 oder 0.001) und wie viele Epochen haben sich als sinnvoll erwiesen, und woran
+      hast du das festgemacht (z. B. Loss-Kurve flacht ab / beginnt zu überanpassen)?
+    </p>
+
+
+    <!-- Loss-Kurve -->
+    <section>
+      <label>Loss- &amp; Accuracy-Verlauf</label>
+      <div id="lossChart"></div>
+    </section>
+
+    <h3>Vorhersagegüte (Top-k Accuracy) und Perplexity</h3>
+    <p>
+      Gemessen auf [TODO: welcher Datensatz / wie viele Zeichen / Trainings- oder Testdaten?]:
+    </p>
+    <table id="resultsTable" border="1" cellpadding="6" style="border-collapse:collapse;">
+      <thead>
+        <tr>
+          <th>k</th>
+          <th>Accuracy (Top-k)</th>
+          <th>Bemerkung</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td id="acc1">[TODO]</td>
+          <td>Genau richtig vorhergesagt</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td id="acc5">[TODO]</td>
+          <td>Korrektes Wort unter den 5 wahrscheinlichsten</td>
+        </tr>
+        <tr>
+          <td>10</td>
+          <td id="acc10">[TODO]</td>
+          <td>Korrektes Wort unter den 10 wahrscheinlichsten</td>
+        </tr>
+        <tr>
+          <td>20</td>
+          <td id="acc20">[TODO]</td>
+          <td>Korrektes Wort unter den 20 wahrscheinlichsten</td>
+        </tr>
+        <tr>
+          <td>100</td>
+          <td id="acc100">[TODO]</td>
+          <td>Korrectes Wort unter den 100 wahrscheinlichsten</td>
+        </tr>
+      </tbody>
+    </table>
+    <p id="perplexityText">
+      Perplexity:[TODO: Wert eintragen, z. B. "Die Perplexity auf den
+      Trainingsdaten betrug X, berechnet als exp(durchschnittlicher Cross-Entropy-Loss)."]
+    </p>
+    <p>
+      <em>Hinweis: Diese Werte lassen sich berechnen, indem man alle (oder eine Stichprobe
+        von) Trainingssequenzen durch das Modell laufen lässt, prüft, ob das wahre nächste
+        Wort unter den Top-k liegt, und den Anteil der Treffer über alle Sequenzen mittelt.</em>
+    </p>
+
+    <h3>Rekonstruktion der Trainingsdaten und Datenschutz</h3>
+    <p>
+      [TODO: Hier dein eigenes Experiment/Ergebnis ergänzen] z. B.:
+      Hast du versucht, mit dem "Auto"-Modus ausgehend von Anfangswörtern aus dem
+      Trainingskorpus, längere Passagen zu generieren, und verglichen, ob diese mit dem
+      Originaltext übereinstimmen? Bei kleinen, oft wiederholten Trainingsdaten und
+      ausreichend Trainingsepochen kann ein Sprachmodell dazu neigen, häufige Sequenzen
+      fast wörtlich zu reproduzieren (Memorization).
+    </p>
+    <p>
+      Dies stellt ein reales Datenschutzproblem dar: Enthalten die
+      Trainingsdaten sensible oder personenbezogene Informationen (z. B. private
+      Nachrichten, interne Dokumente, medizinische Daten), könnten Dritte durch gezieltes
+      Prompting versuchen, diese Inhalte aus dem Modell zu extrahieren
+      (sog. Extraction Attack). Je kleiner und
+      homogener der Trainingsdatensatz und je länger/intensiver trainiert wird, desto
+      höher das Memorization-Risiko.
+    </p>
+  </section>
+
+  <h2>Diskussion</h2>
+  <section class="doc-section">
+    <p>
+      Das LSTM-Sprachmodell lernt auf kleinen, homogenen Textkorpora schnell häufige
+      Wortmuster (z. B. Bigramme/Trigramme), was zu einer vergleichsweise hohen
+      Top-k-Accuracy führt. [TODO: War das bei dir auch so? Welche Muster sind dir
+      aufgefallen?] Mit wachsendem Vokabular steigt die Schwierigkeit der
+      Vorhersageaufgabe, da mehr mögliche nächste Wörter infrage kommen, was die
+      Top-1-Accuracy tendenziell senkt. [TODO: Hast du das beobachtet, z. B. beim
+      Testen mit größerem/kleinerem Datensatz?] Der autoregressive "Auto"-Modus neigt bei
+      kleinen Modellen und wenig Trainingsdaten zu Wiederholungsschleifen (Repetition
+      Loop), da das Modell nach dem wahrscheinlichsten Wort greift, ohne Vielfalt
+      einzubeziehen. [TODO: Ist dir das bei deinen Tests aufgefallen? Beispiel
+      einfügen?] Eine mögliche Verbesserung wäre Temperature- oder Nucleus-Sampling statt
+      reiner Greedy-Auswahl des wahrscheinlichsten Worts. [TODO: Was hast du sonst noch
+      gelernt/beobachtet, z. B. zu Trainingszeit, Overfitting, Einfluss der Lernrate?]
+    </p>
+  </section>
+
+  <h2>Dokumentation</h2>
+  <section class="doc-section">
+    <p>Technisch: verwendete Frameworks:</p>
+    <ul>
+      <li>TensorFlow.js (4.17.0): Aufbau, Training und Inferenz des
+        LSTM-Sprachmodells direkt im Browser, ohne Backend. Ermöglicht außerdem den
+        Export (model.json + .bin + Tokenizer) und Import des trainierten
+        Modells.</li>
+    </ul>
+
+    <p>Technische Besonderheiten:</p>
+    <ul>
+      <li>Das Modell wird einmalig im Browser trainiert (Funktion hello())
+        und danach als next-words-model.json +
+        next-words-model.weights.bin exportiert, zusammen mit dem Tokenizer
+        als tokenizer.json. Diese drei Dateien liegen im GitHub-Pages-Repo
+        und werden beim Seitenaufruf automatisch per fetch geladen, es ist
+        also kein erneutes Training im Normalbetrieb nötig.</li>
+      <li>Bei jeder Vorhersage werden nur die letzten 3 Wörter des aktuellen Texts als Input
+        übergeben, es gibt keinen persistenten Hidden State zwischen Vorhersagen.</li>
+      <li>Die Top-k-Wahrscheinlichkeiten werden effizient über tf.topk()
+        direkt aus dem Softmax-Output extrahiert, statt den gesamten Vokabular-Vektor
+        manuell zu durchsuchen.</li>
+      <li>Speicherverwaltung: Tensor-Operationen bei der Vorhersage laufen in
+        tf.tidy(), damit Zwischen-Tensoren automatisch freigegeben werden
+        und kein Memory-Leak im Browser entsteht.</li>
+    </ul>
+
+    <p>Fachlich: Implementierung:</p>
+    <ul>
+      <li>Tokenisierung: Zeilenumbrüche, Wagenrückläufe, BOM-Zeichen und
+        Anführungszeichen werden entfernt, der Text wird auf Whitespace normalisiert und
+        in Wörter zerlegt. Jedes eindeutige Wort erhält einen Integer-Index nach
+        Häufigkeit sortiert (häufigstes Wort = Index 1, 0 = reserviert/unbekannt).</li>
+      <li>Sequenzbildung: Sliding-Window der festen Länge 3 über den
+        Token-Stream. Jede Trainingssequenz besteht aus 3 Input-Token
+        und 1 Ziel-Token.</li>
+      <li>Architektur: Embedding(64) → LSTM(100,
+        returnSequences=true) → LSTM(100) → Dense(Vokabulargröße, Softmax).</li>
+      <li>Loss: Sparse Categorical Cross-Entropy. Optimizer:
+        Adam (Lernrate 0.01). Batch-Size: 32. Epochen:
+        [TODO: finaler Wert, den du nach Beobachtung der Loss-Kurve gewählt hast — aktuell
+        steht im Code nur EPOCHS = 1, das sollte für ein sinnvoll trainiertes
+        Modell deutlich höher sein].</li>
+      <li>Vorhersage/Interaktion: Die letzten 3 Wörter des aktuellen
+        Prompts werden als Input genutzt; unbekannte Wörter werden als 0 (Padding)
+        behandelt. Über die Buttons "Vorhersage" (Top-5-Wörter mit Wahrscheinlichkeit
+        anzeigen und einzeln auswählbar), "Weiter" (wahrscheinlichstes Wort automatisch
+        anhängen), "Auto" (bis zu 10 Wörter automatisch generieren, unterbrechbar per
+        "Stopp") und "Reset" (Text leeren) kann interaktiv oder autoregressiv Text
+        erzeugt werden.</li>
+      <li>Datensatz: [TODO: Welcher Datensatz genau, wie viele Wörter/Zeichen,
+        welche Sprache, Quelle?]</li>
+      <li>Quellen: [TODO: z. B. Kaggle-Datensatz-Link, TF.js-Dokumentation,
+        Lehrbuch-Kapitel, o. ä.]</li>
+    </ul>
+  </section>
 
   <!-- 2. Parameter & Modell
   <section>
