@@ -89,11 +89,11 @@ async function hello() {
   var bestModel = await tf.loadLayersModel('indexeddb://next-words-model');
   await bestModel.save('downloads://next-words-model');
   console.log("Modell heruntergeladen!");
-/*
-  const loadedModel2 = await tf.loadLayersModel('indexeddb://next-words-model');
-  await loadedModel2.save('downloads://next-words-model');
-  console.log('Modell heruntergeladen!');
-*/
+  /*
+    const loadedModel2 = await tf.loadLayersModel('indexeddb://next-words-model');
+    await loadedModel2.save('downloads://next-words-model');
+    console.log('Modell heruntergeladen!');
+  */
 }
 
 function downloadTokenizer(tokenizerObj) {
@@ -178,31 +178,31 @@ function predictNextWord(textArray) {
   return predictedWord;
 }
 
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('predictBtn').addEventListener('click', () => {
+    const text = document.getElementById('userInput').value;
 
-document.getElementById('predictBtn').addEventListener('click', () => {
-  const text = document.getElementById('userInput').value;
-
-  if (text === "0") {
-    console.log("Execution completed....");
-    return;
-  }
-
-  try {
-    const words = text.split(" ").filter(w => w.length > 0);
-    const lastThree = words.slice(-3);
-    console.log(lastThree);
-
-    if (lastThree.length < 3) {
-      console.log("Bitte mindestens 3 Wörter eingeben.");
+    if (text === "0") {
+      console.log("Execution completed....");
       return;
     }
 
-    const predicted = predictNextWord(lastThree);
-    document.getElementById('result').innerText = "Vorhersage: " + predicted;
+    try {
+      const words = text.split(" ").filter(w => w.length > 0);
+      const lastThree = words.slice(-3);
+      console.log(lastThree);
 
-  } catch (e) {
-    console.log("Error occured: ", e);
-  }
+      if (lastThree.length < 3) {
+        console.log("Bitte mindestens 3 Wörter eingeben.");
+        return;
+      }
+
+      const predicted = predictNextWord(lastThree);
+      document.getElementById('result').innerText = "Vorhersage: " + predicted;
+
+    } catch (e) {
+      console.log("Error occured: ", e);
+    }
+  });
 });
-
 hello();
