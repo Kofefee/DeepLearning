@@ -32,15 +32,10 @@
      margin-bottom: 0.3rem;
  }
 
- textarea,
- input[type=text] {
-     width: 100%;
-     border: 1px solid #ccc;
-     padding: 0.4rem;
-     font-family: monospace;
-     font-size: 13px;
-     box-sizing: border-box;
- }
+textarea {
+  min-height: 80px;
+  resize: none;
+}
 
  textarea {
      min-height: 80px;
