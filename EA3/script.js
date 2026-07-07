@@ -263,7 +263,7 @@ function showPredictions(predictions) {
 
   predictions.forEach(p => {
     const btn = document.createElement('button');
-    btn.textContent = `${p.word} (${(p.prob * 100).toFixed(1)}%)`;
+    btn.textContent = `${p.word}`; //(${(p.prob * 100).toFixed(1)}%)`
     btn.addEventListener('click', () => {
       appendWord(p.word);
       doVorhersage();

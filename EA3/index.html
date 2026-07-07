@@ -57,18 +57,18 @@
       Klassifikationsprobleme mit Softmax-Output.
     </p>
     <p>
-      TODO: Hier meine Experimente ergänzen] z. B.:
-      Welche Architekturen/Parameter hast du zusätzlich ausprobiert (andere LSTM-Unit-Zahlen,
-      andere Embedding-Dimensionen, andere Sequenzlängen, GRU statt LSTM, mehr/weniger
-      Schichten)? Welchen Einfluss hatte das auf Trainingszeit und Loss? Welche Lernrate
-      (0.01 oder 0.001) und wie viele Epochen haben sich als sinnvoll erwiesen, und woran
-      hast du das festgemacht (z. B. Loss-Kurve flacht ab / beginnt zu überanpassen)?
+      Ich habe leider wenige Experimente mit anderen Architekturen/Parametern durchgeführt, 
+      da das Training im Browser sehr lange dauert. Ich habe zuerst mit einem kleinerem Datensatz trainiert, 
+      um die Loss-Kurve zu beobachten und die Lernrate zu testen. Allerdings hat auch dieser Datensatz schon mehrere 
+      Minuten pro Epoche benötigt, sodass ich nicht viele Variationen ausprobieren konnte.
+      Die Lernrate auf 0.01 belassen, da sie sich als stabil erwiesen hat. Epochs habe ich dadurch auch niedrig gelassen.
+      Hier war das Problem mein Laptop bzw. meine Hardware, die nicht genug Leistung hatte, um das Modell schneller zu trainieren.
     </p>
 
 
     <!-- Loss-Kurve -->
     <section>
-      <label>Loss- &amp; Accuracy-Verlauf</label>
+      <label>Loss- und Accuracy-Verlauf</label>
       <div id="lossChart"></div>
     </section>
 
@@ -116,25 +116,18 @@
       Perplexity:[TODO: Wert eintragen, z. B. "Die Perplexity auf den
       Trainingsdaten betrug X, berechnet als exp(durchschnittlicher Cross-Entropy-Loss)."]
     </p>
-    <p>
-      <em>Hinweis: Diese Werte lassen sich berechnen, indem man alle (oder eine Stichprobe
-        von) Trainingssequenzen durch das Modell laufen lässt, prüft, ob das wahre nächste
-        Wort unter den Top-k liegt, und den Anteil der Treffer über alle Sequenzen mittelt.</em>
-    </p>
 
     <h3>Rekonstruktion der Trainingsdaten und Datenschutz</h3>
     <p>
-      [TODO: Hier dein eigenes Experiment/Ergebnis ergänzen] z. B.:
-      Hast du versucht, mit dem "Auto"-Modus ausgehend von Anfangswörtern aus dem
-      Trainingskorpus, längere Passagen zu generieren, und verglichen, ob diese mit dem
-      Originaltext übereinstimmen? Bei kleinen, oft wiederholten Trainingsdaten und
-      ausreichend Trainingsepochen kann ein Sprachmodell dazu neigen, häufige Sequenzen
-      fast wörtlich zu reproduzieren (Memorization).
+      Ich habe ein paar anfangende Worte in das Feld geschrieben und den "Auto"-Modus gestartet. 
+      Das Modell hat dann die nächsten Wörter vorhergesagt und ich konnte sehen, dass es einige Passagen aus dem Trainingskorpus fast wörtlich wiedergegeben hat. 
+      Dies deutet darauf hin, dass das Modell die Trainingsdaten teilweise memoriert hat. 
+      Das lag aber auch hauptsächlich an einem kleinen Datensatz und einer geringen Anzahl an Trainings-Epochen.
     </p>
     <p>
       Dies stellt ein reales Datenschutzproblem dar: Enthalten die
       Trainingsdaten sensible oder personenbezogene Informationen (z. B. private
-      Nachrichten, interne Dokumente, medizinische Daten), könnten Dritte durch gezieltes
+      Nachrichten, interne Dokumente, medizinische Daten), könnten andere durch gezieltes
       Prompting versuchen, diese Inhalte aus dem Modell zu extrahieren
       (sog. Extraction Attack). Je kleiner und
       homogener der Trainingsdatensatz und je länger/intensiver trainiert wird, desto
@@ -146,18 +139,11 @@
   <section class="doc-section">
     <p>
       Das LSTM-Sprachmodell lernt auf kleinen, homogenen Textkorpora schnell häufige
-      Wortmuster (z. B. Bigramme/Trigramme), was zu einer vergleichsweise hohen
-      Top-k-Accuracy führt. [TODO: War das bei dir auch so? Welche Muster sind dir
-      aufgefallen?] Mit wachsendem Vokabular steigt die Schwierigkeit der
-      Vorhersageaufgabe, da mehr mögliche nächste Wörter infrage kommen, was die
-      Top-1-Accuracy tendenziell senkt. [TODO: Hast du das beobachtet, z. B. beim
-      Testen mit größerem/kleinerem Datensatz?] Der autoregressive "Auto"-Modus neigt bei
-      kleinen Modellen und wenig Trainingsdaten zu Wiederholungsschleifen (Repetition
-      Loop), da das Modell nach dem wahrscheinlichsten Wort greift, ohne Vielfalt
-      einzubeziehen. [TODO: Ist dir das bei deinen Tests aufgefallen? Beispiel
-      einfügen?] Eine mögliche Verbesserung wäre Temperature- oder Nucleus-Sampling statt
-      reiner Greedy-Auswahl des wahrscheinlichsten Worts. [TODO: Was hast du sonst noch
-      gelernt/beobachtet, z. B. zu Trainingszeit, Overfitting, Einfluss der Lernrate?]
+      Wortmuster, was zu einer vergleichsweise hohen Top-k-Accuracy führt. 
+      Beim kleinen Datensatz gab es immer mal wieder "Loops", in denen sich das Modell wiederholte. 
+      Also immer wieder das selbe Wort oder die selbe Phrase vorhersagte. Beim größeren Datensatz war das nicht so stark ausgeprägt, da es mehr Variationen gab.
+      Allerdings ergab sich hier das Problem, dass sehr seltsame Wortkombinationen vorhergesagt wurden. 
+      Diese hatten oftmals nicht mal einen Zusammenhang mit dem vorherigen Text.
     </p>
   </section>
 
@@ -191,20 +177,17 @@
 
     <p>Fachlich: Implementierung:</p>
     <ul>
-      <li>Tokenisierung: Zeilenumbrüche, Wagenrückläufe, BOM-Zeichen und
-        Anführungszeichen werden entfernt, der Text wird auf Whitespace normalisiert und
+      <li>Tokenisierung: Zeilenumbrüche und
+        Anführungszeichen wurden entfernt, der Text wird auf Whitespace normalisiert und
         in Wörter zerlegt. Jedes eindeutige Wort erhält einen Integer-Index nach
         Häufigkeit sortiert (häufigstes Wort = Index 1, 0 = reserviert/unbekannt).</li>
       <li>Sequenzbildung: Sliding-Window der festen Länge 3 über den
         Token-Stream. Jede Trainingssequenz besteht aus 3 Input-Token
         und 1 Ziel-Token.</li>
-      <li>Architektur: Embedding(64) → LSTM(100,
-        returnSequences=true) → LSTM(100) → Dense(Vokabulargröße, Softmax).</li>
+      <li>Architektur: Embedding(64) -> LSTM(100,
+        returnSequences=true) -> LSTM(100) -> Dense(Vokabulargröße, Softmax).</li>
       <li>Loss: Sparse Categorical Cross-Entropy. Optimizer:
-        Adam (Lernrate 0.01). Batch-Size: 32. Epochen:
-        [TODO: finaler Wert, den du nach Beobachtung der Loss-Kurve gewählt hast — aktuell
-        steht im Code nur EPOCHS = 1, das sollte für ein sinnvoll trainiertes
-        Modell deutlich höher sein].</li>
+        Adam (Lernrate 0.01). Batch-Size: 32. Epochen:</li>
       <li>Vorhersage/Interaktion: Die letzten 3 Wörter des aktuellen
         Prompts werden als Input genutzt; unbekannte Wörter werden als 0 (Padding)
         behandelt. Über die Buttons "Vorhersage" (Top-5-Wörter mit Wahrscheinlichkeit
@@ -212,10 +195,7 @@
         anhängen), "Auto" (bis zu 10 Wörter automatisch generieren, unterbrechbar per
         "Stopp") und "Reset" (Text leeren) kann interaktiv oder autoregressiv Text
         erzeugt werden.</li>
-      <li>Datensatz: [TODO: Welcher Datensatz genau, wie viele Wörter/Zeichen,
-        welche Sprache, Quelle?]</li>
-      <li>Quellen: [TODO: z. B. Kaggle-Datensatz-Link, TF.js-Dokumentation,
-        Lehrbuch-Kapitel, o. ä.]</li>
+      <li>Datensatz: https://wortschatz-leipzig.de/de/download/deu#deu_typical-mixed_2018</li>
     </ul>
   </section>
 
