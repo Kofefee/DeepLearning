@@ -13,7 +13,7 @@
 
 <body>
 
-  <h1>LSTM Language Model — Wortvorhersage</h1>
+  <h1>LSTM Language Model Wortvorhersage</h1>
   <!-- <div id="statusBanner">Suche vortrainiertes Modell…</div>-->
 
 
@@ -42,7 +42,7 @@
     <h3>Netzwerkarchitektur</h3>
     <p>
       Verwendet wird ein Stacked LSTM mit folgendem Aufbau:
-      Embedding (Dimension 64) → LSTM (100 Units, returnSequences=true) ->
+      Embedding (Dimension 64) -> LSTM (100 Units, returnSequences=true) ->
       LSTM (100 Units) -> Dense (Vokabulargröße, Softmax-Aktivierung).
       Als Input dienen die letzten 3 Wörter (Sequenzlänge = 3), als Ziel das jeweils
       darauffolgende Wort.

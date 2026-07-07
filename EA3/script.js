@@ -1,13 +1,18 @@
 async function hello() {
-  var vocabResp = await fetch('dataset-test.txt');
+  var vocabResp = await fetch('german-dataset.txt');
   let text = await vocabResp.text();
   console.log("Start Training!");
 
   text = text
-    .replace(/\n/g, ' ')
-    .replace(/\r/g, ' ')
+
+  .replace(/\r\n/g, '\n')
+    .replace(/\r/g, '\n')
     .replace(/\ufeff/g, '')
-    .replace(/"/g, '');
+    .replace(/\t/g, ' ')
+    .replace(/ +/g, ' ')
+    .replace(/\n{2,}/g, '\n')
+    .replace(/"/g, '')
+    .trim();
 
   text = text.split(/\s+/).filter(w => w.length > 0).join(' ');
 
@@ -129,7 +134,7 @@ async function loadModel() {
 }
 
 // Direkt beim Start der Seite laden
-loadModel();
+//loadModel();
 
 
 
@@ -344,4 +349,4 @@ document.getElementById('userInput').addEventListener('input', autoResizeTextare
 
 
 
-//hello();
+hello();
