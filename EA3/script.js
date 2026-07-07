@@ -178,7 +178,7 @@ function predictNextWord(textArray) {
   return predictedWord;
 }
 
-
+/*
 document.getElementById('predictBtn').addEventListener('click', () => {
   const text = document.getElementById('userInput').value;
 
@@ -204,5 +204,5 @@ document.getElementById('predictBtn').addEventListener('click', () => {
     console.log("Error occured: ", e);
   }
 });
-
+*/
 hello();
