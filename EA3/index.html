@@ -130,7 +130,7 @@
     </p>
     <p>
       Der Trainingsverlauf über die 5 Epochen zeigte einen klar sinkenden, sich abflachenden
-      Loss (5,62 → 5,52 → 5,49 → 5,48 → 5,47), was auf ein grundsätzlich funktionierendes
+      Loss (5,62 -> 5,52 -> 5,49 -> 5,48 -> 5,47), was auf ein grundsätzlich funktionierendes
       Lernverhalten hindeutet. Die Top-1-Accuracy von 29,1% liegt über dem Zufallsniveau, was zeigt, dass das Modell
       vor allem häufige Wörter bereits gut vorhersagt. Die
       vergleichsweise niedrige Top-100-Accuracy (56,8%) und die hohe Perplexity deuten jedoch
@@ -164,16 +164,15 @@
       Das LSTM-Sprachmodell lernt auf kleinen, homogenen Textkorpora schnell häufige
       Wortmuster, was zu einer vergleichsweise hohen Top-k-Accuracy führt.
       Beim kleinen Datensatz gab es immer mal wieder "Loops", in denen sich das Modell wiederholte.
-      Also immer wieder das selbe Wort oder die selbe Phrase vorhersagte. Beim größeren Datensatz war das nicht so stark
-      ausgeprägt, da es mehr Variationen gab.
+      Also immer wieder das selbe Wort oder die selbe Phrase vorhersagt. Bei einem größerem Datensatz war das nicht der Fall.
       Allerdings ergab sich hier das Problem, dass sehr seltsame Wortkombinationen vorhergesagt wurden.
-      Diese hatten oftmals nicht mal einen Zusammenhang mit dem vorherigen Text.
+      Diese hatten oftmals nicht mal einen Zusammenhang mit dem vorherigen Wort bzw. Wörtern.
       Zusätzlich zeigte sich, dass ein großes Vokabular (ursprünglich über 40.000 Wörter) das
       Training im Browser stark verlangsamte; erst die Reduktion auf die 5000 häufigsten
       Wörter machte mehrere Trainingsläufe innerhalb praktikabler Zeit möglich. Dies ging
       jedoch auf Kosten der Ausdrucksfähigkeit des Modells, da seltenere Wörter nicht mehr
-      vorhergesagt werden können. Insgesamt war die verfügbare Rechenleistung der limitierende
-      Faktor für Modellgröße, Vokabularumfang und Trainingsdauer.
+      vorhergesagt werden können. Ebenso tritt hier auch sehr stark das Problem mit den sich wiederholenden Wörtern hervor.
+      Insgesamt war die verfügbare Rechenleistung meines Laptops der limitierende Faktor für Modellgröße, Vokabularumfang und Trainingsdauer.
     </p>
   </section>
 
