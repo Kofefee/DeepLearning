@@ -20,14 +20,16 @@ async function hello() {
   var wordCounts = {};
   words.forEach(w => { wordCounts[w] = (wordCounts[w] || 0) + 1; });
 
+  var MAX_VOCAB = 5000;
+
   var sortedWords = Object.keys(wordCounts).sort((a, b) => wordCounts[b] - wordCounts[a]);
   var wordIndexLocal = {};
-  sortedWords.forEach((w, i) => { wordIndexLocal[w] = i + 1; });
+  sortedWords.slice(0, MAX_VOCAB).forEach((w, i) => { wordIndexLocal[w] = i + 1; });
   localStorage.setItem('tokenizer', JSON.stringify(wordIndexLocal));
 
   downloadTokenizer(wordIndexLocal);
 
-  var sequenceData = words.map(w => wordIndexLocal[w]);
+  var sequenceData = words.map(w => wordIndexLocal[w] || 0);
   var vocabularySize = Object.keys(wordIndexLocal).length + 1;
 
   var sequence = [];
@@ -161,7 +163,7 @@ async function loadModel() {
 }
 
 // Direkt beim Start der Seite laden
-loadModel();
+//loadModel();
 
 
 
