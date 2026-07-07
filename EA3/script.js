@@ -256,7 +256,7 @@ function predictTopK(textArray, k = 5) {
     const sequence = textArray.map(w => wordIndex[w] || 0);
     const inputTensor = tf.tensor2d([sequence]);
 
-    const prediction = model.predict(inputTensor);
+    var prediction = model.predict(inputTensor);
     // wir ballern (unbekannt) so gut es geht raus
     const vocabSize = prediction.shape[1];
     const mask = tf.oneHot(0, vocabSize).mul(-1).add(1); // Vektor mit 0 an Position 0, sonst 1
