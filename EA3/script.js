@@ -5,7 +5,7 @@ async function hello() {
 
   text = text
 
-  .replace(/\r\n/g, '\n')
+    .replace(/\r\n/g, '\n')
     .replace(/\r/g, '\n')
     .replace(/\ufeff/g, '')
     .replace(/\t/g, ' ')
@@ -50,7 +50,7 @@ async function hello() {
   var LSTM_UNITS = 100;
   var LEARNING_RATE = 0.01;
   var BATCH_SIZE = 32;
-  var EPOCHS = 2;
+  var EPOCHS = 5;
 
   var trainedModel = tf.sequential({
     layers: [
@@ -73,6 +73,20 @@ async function hello() {
 
   trainedModel.summary();
 
+  var lossHistory = [];
+  var accHistory = [];
+  var epochLabels = [];
+
+  Plotly.newPlot('lossChart', [
+    { x: [], y: [], mode: 'lines+markers', name: 'Loss' },
+    { x: [], y: [], mode: 'lines+markers', name: 'Accuracy', yaxis: 'y2' }
+  ], {
+    title: 'Trainingsverlauf',
+    xaxis: { title: 'Epoche' },
+    yaxis: { title: 'Loss' },
+    yaxis2: { title: 'Accuracy', overlaying: 'y', side: 'right', range: [0, 1] }
+  });
+
   let bestLoss = Infinity;
   await trainedModel.fit(x, y, {
     epochs: EPOCHS,
@@ -80,6 +94,16 @@ async function hello() {
     callbacks: {
       onEpochEnd: async (epoch, logs) => {
         console.log(`Epoch ${epoch}: loss = ${logs.loss}`);
+
+        epochLabels.push(epoch + 1);
+        lossHistory.push(logs.loss);
+        accHistory.push(logs.acc !== undefined ? logs.acc : logs.accuracy);
+
+        Plotly.update('lossChart', {
+          x: [epochLabels, epochLabels],
+          y: [lossHistory, accHistory]
+        });
+
         if (logs.loss < bestLoss) {
           bestLoss = logs.loss;
           await trainedModel.save('indexeddb://next-words-model');
@@ -90,6 +114,9 @@ async function hello() {
   });
 
   console.log("Training finished!");
+
+  const evalResults = await evaluateModel(trainedModel, xArr, yArr, 2000, 100);
+  displayEvaluationResults(evalResults);
 
   var bestModel = await tf.loadLayersModel('indexeddb://next-words-model');
   await bestModel.save('downloads://next-words-model');
@@ -348,5 +375,96 @@ function autoResizeTextarea() {
 document.getElementById('userInput').addEventListener('input', autoResizeTextarea);
 
 
+async function evaluateModel(model, xArr, yArr, sampleSize = 2000, batchSize = 100) {
+  console.log("Starte Evaluierung (Top-k Accuracy & Perplexity)...");
 
-//hello();
+  const totalSamples = xArr.length;
+  const n = Math.min(sampleSize, totalSamples);
+
+  // Zufällige Stichprobe von Indizes ziehen
+  const allIndices = Array.from({ length: totalSamples }, (_, i) => i);
+  for (let i = allIndices.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [allIndices[i], allIndices[j]] = [allIndices[j], allIndices[i]];
+  }
+  const sampleIndices = allIndices.slice(0, n);
+
+  const kValues = [1, 5, 10, 20, 100];
+  const correctCounts = { 1: 0, 5: 0, 10: 0, 20: 0, 100: 0 };
+  let sumNegLogProb = 0;
+
+  for (let start = 0; start < n; start += batchSize) {
+    const batchIdx = sampleIndices.slice(start, start + batchSize);
+    const batchX = batchIdx.map(i => xArr[i]);
+    const batchY = batchIdx.map(i => yArr[i]);
+
+    const { topIndicesPerSample, trueProbPerSample } = tf.tidy(() => {
+      const inputTensor = tf.tensor2d(batchX);
+      const preds = model.predict(inputTensor); // [batchSize, vocabSize], Softmax
+
+      // Top-100 Indizes je Sample (größter benötigter k-Wert)
+      const { indices: topIdx } = tf.topk(preds, 100);
+      const topIndicesPerSample = topIdx.arraySync();
+
+      // Wahrscheinlichkeit des tatsächlichen Zielworts je Sample
+      const trueIndicesTensor = tf.tensor1d(batchY, 'int32');
+      const trueProbTensor = tf.gatherND(
+        preds,
+        trueIndicesTensor.reshape([-1, 1]).concat(
+          tf.range(0, batchY.length, 1, 'int32').reshape([-1, 1]), 1
+        )
+      );
+
+      const trueProbPerSample = [];
+      const predsArr = preds.arraySync();
+      for (let i = 0; i < batchY.length; i++) {
+        trueProbPerSample.push(predsArr[i][batchY[i]]);
+      }
+
+      return { topIndicesPerSample, trueProbPerSample };
+    });
+
+    for (let i = 0; i < batchY.length; i++) {
+      const trueWord = batchY[i];
+      const top100 = topIndicesPerSample[i];
+
+      kValues.forEach(k => {
+        if (top100.slice(0, k).includes(trueWord)) {
+          correctCounts[k]++;
+        }
+      });
+
+      const p = Math.max(trueProbPerSample[i], 1e-10);
+      sumNegLogProb += -Math.log(p);
+    }
+
+    console.log(`Evaluierung: ${Math.min(start + batchSize, n)}/${n} Samples verarbeitet`);
+  }
+
+  const accuracies = {};
+  kValues.forEach(k => {
+    accuracies[k] = correctCounts[k] / n;
+  });
+
+  const avgNegLogProb = sumNegLogProb / n;
+  const perplexity = Math.exp(avgNegLogProb);
+
+  console.log("Top-k Accuracy:", accuracies);
+  console.log("Perplexity:", perplexity);
+
+  return { accuracies, perplexity, sampleSize: n };
+}
+
+
+function displayEvaluationResults(results) {
+  document.getElementById('acc1').innerText = (results.accuracies[1] * 100).toFixed(1) + '%';
+  document.getElementById('acc5').innerText = (results.accuracies[5] * 100).toFixed(1) + '%';
+  document.getElementById('acc10').innerText = (results.accuracies[10] * 100).toFixed(1) + '%';
+  document.getElementById('acc20').innerText = (results.accuracies[20] * 100).toFixed(1) + '%';
+  document.getElementById('acc100').innerText = (results.accuracies[100] * 100).toFixed(1) + '%';
+
+  document.getElementById('perplexityText').innerText =
+    `Perplexity: ${results.perplexity.toFixed(2)} (berechnet auf einer Stichprobe von ${results.sampleSize} Sequenzen)`;
+}
+
+hello();
