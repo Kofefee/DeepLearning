@@ -8,6 +8,7 @@ async function hello() {
     .replace(/\r/g, ' ')
     .replace(/\ufeff/g, '')
     .replace(/"/g, '');
+
   text = text.split(/\s+/).filter(w => w.length > 0).join(' ');
 
   var words = text.split(' ');
@@ -17,7 +18,7 @@ async function hello() {
   var sortedWords = Object.keys(wordCounts).sort((a, b) => wordCounts[b] - wordCounts[a]);
   var wordIndexLocal = {};
   sortedWords.forEach((w, i) => { wordIndexLocal[w] = i + 1; });
-  localStorage.setItem('tokenizer', JSON.stringify(wordIndex));
+  localStorage.setItem('tokenizer', JSON.stringify(wordIndexLocal));
 
   downloadTokenizer(wordIndexLocal);
 
@@ -46,7 +47,7 @@ async function hello() {
   var BATCH_SIZE = 32;
   var EPOCHS = 1;
 
-  var model = tf.sequential({
+  var trainedModel = tf.sequential({
     layers: [
       tf.layers.embedding({
         inputDim: vocabularySize,
@@ -59,16 +60,16 @@ async function hello() {
     ]
   });
 
-  model.compile({
+  trainedModel.compile({
     optimizer: tf.train.adam(LEARNING_RATE),
     loss: 'sparseCategoricalCrossentropy',
     metrics: ['accuracy']
   });
 
-  model.summary();
+  trainedModel.summary();
 
   let bestLoss = Infinity;
-  await model.fit(x, y, {
+  await trainedModel.fit(x, y, {
     epochs: EPOCHS,
     batchSize: BATCH_SIZE,
     callbacks: {
@@ -76,7 +77,7 @@ async function hello() {
         console.log(`Epoch ${epoch}: loss = ${logs.loss}`);
         if (logs.loss < bestLoss) {
           bestLoss = logs.loss;
-          await model.save('indexeddb://next-words-model');
+          await trainedModel.save('indexeddb://next-words-model');
           console.log(`Modell gespeichert (loss: ${logs.loss})`);
         }
       }
@@ -84,18 +85,27 @@ async function hello() {
   });
 
   console.log("Training finished!");
-  var loadedModel = await tf.loadLayersModel('indexeddb://next-words-model');
 
-  await model.save('downloads://next-words-model');
+  var bestModel = await tf.loadLayersModel('indexeddb://next-words-model');
+  await bestModel.save('downloads://next-words-model');
+  console.log("Modell heruntergeladen!");
 /*
   const loadedModel2 = await tf.loadLayersModel('indexeddb://next-words-model');
   await loadedModel2.save('downloads://next-words-model');
   console.log('Modell heruntergeladen!');
 */
 }
-let model = null;
-//let wordIndex = null;
-let indexWord = null;
+
+function downloadTokenizer(tokenizerObj) {
+  const blob = new Blob([JSON.stringify(tokenizerObj)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'tokenizer.json';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 
 async function loadModel() {
   try {
@@ -118,17 +128,18 @@ async function loadModel() {
   }
 }
 
+// Direkt beim Start der Seite laden
+loadModel();
+
+/*
 var wordIndex = JSON.parse(localStorage.getItem('tokenizer'));
 
 const indexWord = {};
 Object.keys(wordIndex).forEach(word => {
   indexWord[wordIndex[word]] = word;
 });
-
-
-// Direkt beim Start der Seite laden
-loadModel();
-
+*/
+/*
 function predictNextWord(model, wordIndex, indexWord, textArray) {
 
   var sequence = textArray.map(w => wordIndex[w] || 0); // 0 falls unbekanntes Wort
@@ -144,7 +155,7 @@ function predictNextWord(model, wordIndex, indexWord, textArray) {
   console.log(predictedWord);
   return predictedWord;
 }
-
+*/
 function predictNextWord(textArray) {
   if (!model || !wordIndex) {
     console.log("Modell oder Tokenizer noch nicht geladen!");
@@ -191,15 +202,5 @@ document.getElementById('predictBtn').addEventListener('click', () => {
     console.log("Error occured: ", e);
   }
 });
-
-function downloadTokenizer(tokenizerObj) {
-  const blob = new Blob([JSON.stringify(tokenizerObj)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'tokenizer.json';
-  a.click();
-  URL.revokeObjectURL(url);
-}
 
 hello();
