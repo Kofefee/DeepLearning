@@ -336,7 +336,8 @@ document.getElementById('resetBtn').addEventListener('click', () => {
 
 function autoResizeTextarea() {
   const textarea = document.getElementById('userInput');
-  textarea.style.height = 'auto'; // erst zurücksetzen, damit scrollHeight korrekt neu berechnet wird
+  console.log("Resize läuft, scrollHeight:", textarea.scrollHeight);
+  textarea.style.height = 'auto';
   textarea.style.height = textarea.scrollHeight + 'px';
 }
 
