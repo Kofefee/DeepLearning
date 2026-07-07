@@ -134,7 +134,7 @@ async function loadModel() {
 }
 
 // Direkt beim Start der Seite laden
-//loadModel();
+loadModel();
 
 
 
@@ -349,4 +349,4 @@ document.getElementById('userInput').addEventListener('input', autoResizeTextare
 
 
 
-hello();
+//hello();
