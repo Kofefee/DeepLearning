@@ -202,4 +202,4 @@ function downloadTokenizer(tokenizerObj) {
   URL.revokeObjectURL(url);
 }
 
-//hello();
+hello();
