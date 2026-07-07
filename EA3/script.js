@@ -197,6 +197,7 @@ function appendWord(word) {
   const words = getWords();
   words.push(word);
   textarea.value = words.join(' ') + ' ';
+  autoResizeTextarea();
 }
 
 function setStatus(msg) {
@@ -329,6 +330,16 @@ document.getElementById('resetBtn').addEventListener('click', () => {
   document.getElementById('userInput').value = '';
   clearPredictions();
   setStatus('');
+  autoResizeTextarea();
 });
+
+
+function autoResizeTextarea() {
+  const textarea = document.getElementById('userInput');
+  textarea.style.height = 'auto'; // erst zurücksetzen, damit scrollHeight korrekt neu berechnet wird
+  textarea.style.height = textarea.scrollHeight + 'px';
+}
+
+document.getElementById('userInput').addEventListener('input', autoResizeTextarea);
 
 //hello();
